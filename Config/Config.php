@@ -14,7 +14,7 @@ const DB_CHARSET = "utf8";
 //Datos envio de correo
 const NOMBRE_REMITENTE = "SENA La Jagua";
 const EMAIL_REMITENTE = "sena.lajagua@sena.edu.co";
-const NOMBRE_EMPESA = "SENA";
+const NOMBRE_EMPESA = "Neila";
 const WEB_EMPRESA = "www.sena.edu.co";
 
 const DESCRIPCION = "Servicio Nacional de Aprendizaje";
