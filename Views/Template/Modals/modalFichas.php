@@ -7,7 +7,7 @@
 
             <!-- Header -->
             <div class="modal-header headerRegister">
-                <h5 class="modal-title" id="titleModal">Nueva Ficha</h5>
+                <h5 class="modal-title" id="titleModal">agregar</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 

@@ -73,23 +73,6 @@
             </li>
 
             <li>
-                <a class="app-menu__item" href="<?= base_url(); ?>/competencias">
-                    <i class="app-menu__icon bi bi-ui-checks-grid"></i>
-                    <span class="app-menu__label">Competencias</span>
-                </a>
-            </li>
-
-
-            <li>
-                <a class="app-menu__item " href="<?= base_url(); ?>/asignaciones">
-                    <i class="app-menu__icon bi bi-card-checklist"></i>
-                    <span class="app-menu__label">Asignaciones</span>
-                </a>
-            </li>
-
-
-
-            <li>
                 <a class="bg-danger app-menu__item" href="<?= base_url(); ?>/logout">
                     <i class="app-menu__icon bi bi-escape"></i>
                     <span class="app-menu__label">Salir</span>

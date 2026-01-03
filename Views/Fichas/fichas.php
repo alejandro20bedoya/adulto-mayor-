@@ -9,8 +9,7 @@ headerAdmin($data);
         </div>
         <?php if ($_SESSION['permisosMod']['w']) { ?>
             <button class="btn btn-warning" type="button" data-bs-toggle="modal" onclick="openModal();">
-                <i class="bi bi-plus-lg"></i>
-                Nueva Ficha</button>
+                <i class="bi bi-plus-lg"></i>agregar video</button>
         <?php } ?>
 
         <ul class="app-breadcrumb breadcrumb">
