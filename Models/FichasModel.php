@@ -71,36 +71,17 @@ class FichasModel extends Mysql
 
 
     /// insertar ficha A LA BASE DE DATOS 
-    public function insertFicha(int $programaide, int $numeroficha, int $usuarioide)
+    public function insertFicha($cedula, $nombre, $edad, $video, $videoType)
     {
-        $this->intProgramaIde = $programaide;
-        $this->intNumeroFicha = $numeroficha;
-        $this->intUsuarioIde  = $usuarioide;
 
-        $return = 0;
+        $sql = "INSERT INTO videosadultomayor (numerocedula, nombre, edad, video, video_tipo)
+            VALUES (?, ?, ?, ?, ?)";
 
-        // Escapar valores
-        $numeroEscaped   = addslashes($this->intNumeroFicha);
-        $programaEscaped = addslashes($this->intProgramaIde);
-        $usuarioEscaped  = addslashes($this->intUsuarioIde);
+        $arrData = array($cedula, $nombre, $edad, $video, $videoType);
 
-        // Validar si ya existe la ficha
-        $sql = "SELECT ideFicha FROM tbl_fichas WHERE numeroficha = '$numeroEscaped' LIMIT 1";
-        $request = $this->select_all($sql);
-
-        if (empty($request)) {
-            $query_insert = "INSERT INTO tbl_fichas(programaide, numeroficha, usuarioide) 
-                         VALUES('$programaEscaped', '$numeroEscaped', '$usuarioEscaped')";
-
-            $request_insert = $this->insert($query_insert, []);
-            // array vacío porque tu método exige 2 argumentos
-            $return = $request_insert;
-        } else {
-            $return = "exist";
-        }
-
-        return $return;
+        return $this->insert($sql, $arrData);
     }
+
 
     //ACTUALIZAR FICHA
     public function updateFicha(int $ideficha, int $codigoprograma, int $codigoficha, int $ideinstructor, int $status)

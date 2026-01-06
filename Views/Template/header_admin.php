@@ -37,7 +37,7 @@
     </div>
 
     <!-- Navbar-->
-    <header class="app-header"><a class="app-header__logo" href="<?= base_url(); ?>/dashboard"> <img src="<?= media(); ?>/images/ombe.png" alt="Imagen de ombe" style="width:100px; height:40px; object-fit:cover;"></a>
+    <header class="app-header"><a class="app-header__logo" href="<?= base_url(); ?>/dashboard"> <img src="<?= media(); ?>/images/logoadulto.png" alt="Imagen de ombe" style="width:100px; height:40px; object-fit:cover;"></a>
         <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
             aria-label="Hide Sidebar"></a>
         <!-- Navbar Menu-->

@@ -13,19 +13,33 @@ class Mysql extends Conexion
     }
 
     // Insertar un registro
+    // Insertar un registro (SOPORTA LONGBLOB)
     public function insert(string $query, array $arrValues)
     {
-        $this->strquery = $query;
-        $this->arrValues = $arrValues;
-        $insert = $this->conexion->prepare($this->strquery);
-        $resInsert = $insert->execute($this->arrValues);
-        if ($resInsert) {
-            $lastInsert = $this->conexion->lastInsertId();
-        } else {
-            $lastInsert = 0;
+        try {
+            $this->strquery = $query;
+            $this->arrValues = $arrValues;
+
+            $stmt = $this->conexion->prepare($this->strquery);
+
+            foreach ($this->arrValues as $index => $value) {
+
+                // Detectar datos binarios grandes (video)
+                if (is_string($value) && strlen($value) > 100000) {
+                    $stmt->bindValue($index + 1, $value, PDO::PARAM_LOB);
+                } else {
+                    $stmt->bindValue($index + 1, $value, PDO::PARAM_STR);
+                }
+            }
+
+            $stmt->execute();
+            return $this->conexion->lastInsertId();
+        } catch (PDOException $e) {
+            error_log('ERROR INSERT MYSQL: ' . $e->getMessage());
+            return 0;
         }
-        return $lastInsert;
     }
+
 
     // Busca un registro
     public function select(string $query, array $arrValues = [])

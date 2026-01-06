@@ -52,14 +52,68 @@ document.addEventListener(
       order: [[0, "desc"]],
     });
 
-    if (document.querySelector("#formFicha")) {
-      let formFicha = document.querySelector("#formFicha");
+    if (document.querySelector("#adultomy")) {
+      let formFicha = document.querySelector("#adultomy");
 
       formFicha.onsubmit = function (e) {
         e.preventDefault();
+        console.log("✅ Entró al submit");
 
+        const inputVideo = document.querySelector("#video");
+
+        // ===============================
+        // VALIDACIÓN DEL VIDEO (4 minutos)
+        // ===============================
+        if (inputVideo && inputVideo.files.length > 0) {
+          const file = inputVideo.files[0];
+
+          // Validar que sea video
+          if (!file.type.startsWith("video/")) {
+            Swal.fire({
+              icon: "error",
+              title: "Archivo inválido",
+              text: "El archivo seleccionado no es un video"
+            });
+            return;
+          }
+
+          const video = document.createElement("video");
+          video.preload = "metadata";
+
+          video.onloadedmetadata = function () {
+            window.URL.revokeObjectURL(video.src);
+
+            const duracion = video.duration; // segundos
+
+            if (duracion > 240) {
+              Swal.fire({
+                icon: "warning",
+                title: "Video muy largo",
+                text: "El video no puede durar más de 4 minutos"
+              });
+              return;
+            }
+
+            // 👉 Si pasa la validación, enviamos el formulario
+            enviarFormulario();
+          };
+
+          video.src = URL.createObjectURL(file);
+        } else {
+          // Si no hay video, enviamos normal
+          enviarFormulario();
+        }
+      };
+
+      // ===============================
+      // FUNCIÓN DE ENVÍO DEL FORMULARIO
+      // ===============================
+      function enviarFormulario() {
         let formData = new FormData(formFicha);
-        divLoading.style.display = "flex";
+
+        if (typeof divLoading !== "undefined") {
+          divLoading.style.display = "flex";
+        }
 
         let request = new XMLHttpRequest();
         request.open("POST", base_url + "/Fichas/setFicha", true);
@@ -67,42 +121,59 @@ document.addEventListener(
 
         request.onreadystatechange = function () {
           if (request.readyState === 4) {
-            divLoading.style.display = "none";
+            if (typeof divLoading !== "undefined") {
+              divLoading.style.display = "none";
+            }
 
-            if (request.status === 200) {
-              let objData;
-              try {
-                objData = JSON.parse(request.responseText);
-              } catch (error) {
-                console.error("Error al parsear JSON:", request.responseText);
-                swal("Error", "Respuesta del servidor no válida.", "error");
-                return;
-              }
+            console.log("🔵 Status HTTP:", request.status);
+            console.log("🔵 Respuesta cruda:", request.responseText);
 
-              // Dependiendo del status enviado por el controlador
-              if (objData.status === true) {
-                // Registro o actualización exitosa
-                $("#modalFormFicha").modal("hide");
-                formFicha.reset();
-                tableFichas.ajax.reload(null, false); // recarga la tabla sin reiniciar la paginación
-                swal("Éxito", objData.msg, "success");
-              } else if (objData.status === "exist") {
-                // La ficha ya existe
-                swal("Atención", objData.msg, "warning");
-              } else {
-                // Error general
-                swal(
-                  "Error",
-                  objData.msg || "No se pudo procesar la ficha.",
-                  "error"
-                );
-              }
+            // ❌ Error de servidor
+            if (request.status !== 200) {
+              Swal.fire({
+                icon: "error",
+                title: "Error del servidor",
+                text: "Código HTTP: " + request.status
+              });
+              return;
+            }
+
+            let objData;
+            try {
+              objData = JSON.parse(request.responseText);
+            } catch (error) {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "La respuesta no es JSON válido"
+              });
+              return;
+            }
+
+            // ✅ Respuesta correcta
+            if (objData.status === true) {
+              formFicha.reset();
+              Swal.fire({
+                icon: "success",
+                title: "Éxito",
+                text: objData.msg
+              });
+            } else if (objData.status === "exist") {
+              Swal.fire({
+                icon: "warning",
+                title: "Atención",
+                text: objData.msg
+              });
             } else {
-              swal("Error", "No se pudo conectar con el servidor.", "error");
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: objData.msg || "Error desconocido"
+              });
             }
           }
         };
-      };
+      }
     }
   },
   false

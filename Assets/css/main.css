@@ -13411,7 +13411,7 @@ textarea.form-control-lg {
   min-height: calc(100vh - 50px);
   margin-top: 50px;
   padding: 30px;
-  background-color: #E5E5E5;
+  background-color: #ffffff;
   -webkit-transition: margin-left 0.3s ease;
   transition: margin-left 0.3s ease;
 }
@@ -13462,7 +13462,7 @@ textarea.form-control-lg {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  background-color: #007832;
+  background-color: #2492ff;
   z-index: 1030;
   padding-right: 15px;
 }
@@ -13497,7 +13497,7 @@ textarea.form-control-lg {
             flex: 0 0 auto;
     display: block;
     width: 230px;
-    background-color: #39A900;
+    background-color: #ffffff;
   }
 }
 .app-header__logo:focus, .app-header__logo:hover {
@@ -13527,7 +13527,7 @@ textarea.form-control-lg {
 }
 .app-sidebar__toggle:focus, .app-sidebar__toggle:hover {
   color: #fff;
-  background-color: #39A900;
+  background-color: #54a5f7;
   text-decoration: none;
 }
 
@@ -13684,7 +13684,7 @@ textarea.form-control-lg {
   width: 230px;
   overflow: auto;
   z-index: 10;
-  background-color: #222d32;
+  background-color: #2492ff;
   -webkit-box-shadow: 0px 8px 17px rgba(0, 0, 0, 0.2);
           box-shadow: 0px 8px 17px rgba(0, 0, 0, 0.2);
   -webkit-transition: left 0.3s ease, width 0.3s ease;

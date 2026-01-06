@@ -61,14 +61,14 @@
             <li>
                 <a class="app-menu__item" href="<?= base_url(); ?>/programas">
                     <i class="app-menu__icon bi bi-inboxes"></i>
-                    <span class="app-menu__label">Programas</span>
+                    <span class="app-menu__label">gestion de videos</span>
                 </a>
             </li>
 
             <li>
                 <a class="app-menu__item" href="<?= base_url(); ?>/fichas">
                     <i class="app-menu__icon bi bi-clipboard-plus"></i>
-                    <span class="app-menu__label">Fichas</span>
+                    <span class="app-menu__label">Videos adulto mayor</span>
                 </a>
             </li>
 

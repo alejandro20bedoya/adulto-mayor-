@@ -20,11 +20,12 @@ class Fichas extends Controllers
             header("Location:" . base_url() . '/dashboard');
         }
         $data['page_tag'] = "Fichas";
-        $data['page_title'] = "Fichas";
+        $data['page_title'] = "Formulario de Registro";
         $data['page_name'] = "fichas";
         $data['page_functions_js'] = "functions_fichas.js";
         $this->views->getView($this, "fichas", $data);
     }
+
     // CONTROLADOOR DE INSERCION DE FICHAS
     public function setFicha()
     {
@@ -33,75 +34,42 @@ class Fichas extends Controllers
         error_reporting(E_ALL);
         ini_set('display_errors', 0);
 
-        if ($_POST) {
+        if ($_POST || $_FILES) {
 
-            // Validación básica de campos obligatorios
-            if (empty($_POST['txtCodigoPrograma']) || empty($_POST['txtFichaPrograma']) || empty($_POST['txtNombreInstructor'])) {
-                echo json_encode(["status" => false, "msg" => 'Datos incorrectos.'], JSON_UNESCAPED_UNICODE);
-                die();
-            }
+            $cedula = strClean($_POST['cedula'] ?? '');
+            $nombre = strClean($_POST['nombre'] ?? '');
+            $edad   = intval($_POST['edad'] ?? 0);
 
-            // Datos del formulario
-            $intIdeFicha     = intval($_POST['ideFicha'] ?? 0); // 0 = nuevo registro
-            $CodigoPrograma  = strClean($_POST['txtCodigoPrograma']);
-            $FichaPrograma   = strClean($_POST['txtFichaPrograma']);
-            $IdeInstructor   = strClean($_POST['txtIdeInstructor']);
-            $intStatus       = intval($_POST['listStatus'] ?? 1); // 1 = activo por defecto
+            $videoData = null;
+            $videoType = null;
 
-            // Buscar ID del programa
-            $CodigoProgramaEscaped = addslashes($CodigoPrograma);
-            $sqlPrograma = "SELECT ideprograma FROM tbl_programas WHERE codigoprograma = '$CodigoProgramaEscaped'";
-            $programa = $this->model->select($sqlPrograma);
+            if (isset($_FILES['video']) && $_FILES['video']['error'] === 0) {
 
-            if (empty($programa)) {
-                echo json_encode(['status' => false, 'msg' => 'Programa no encontrado.'], JSON_UNESCAPED_UNICODE);
-                die();
-            }
-            $intPrograma = $programa['ideprograma'];
-
-            // Buscar ID del instructor
-            $IdeInstructorEscaped = addslashes($IdeInstructor);
-            $sqlUsuario = "SELECT ideusuario FROM tbl_usuarios WHERE identificacion = '$IdeInstructorEscaped'";
-            $usuario = $this->model->select($sqlUsuario);
-
-            if (empty($usuario)) {
-                echo json_encode(['status' => false, 'msg' => 'Instructor no encontrado.'], JSON_UNESCAPED_UNICODE);
-                die();
-            }
-            $intInstructor = $usuario['ideusuario'];
-
-            // Insert o Update
-            $request_user = 0;
-            $msg = '';
-
-            if ($intIdeFicha == 0) {
-                // Insertar
-                if (!empty($_SESSION['permisosMod']['w'])) {
-                    $request_user = $this->model->insertFicha($intPrograma, $FichaPrograma, $intInstructor, $intStatus);
-
-                    if ($request_user === "exist") {
-                        echo json_encode([
-                            'status' => 'exist',
-                            'msg' => 'La ficha ya está registrada.'
-                        ], JSON_UNESCAPED_UNICODE);
-                        die();
-                    }
-
-                    $msg = 'Ficha creada correctamente.';
+                // Validar tamaño (ej: 50MB)
+                if ($_FILES['video']['size'] > 50 * 1024 * 1024) {
+                    echo json_encode([
+                        'status' => false,
+                        'msg' => 'El video supera el tamaño permitido'
+                    ]);
+                    die();
                 }
-            } else if ($intIdeFicha > 0) {
-                // Actualizar
-                if (!empty($_SESSION['permisosMod']['u'])) {
-                    $request_user = $this->model->updateFicha($intIdeFicha, $intPrograma, $FichaPrograma, $intInstructor, $intStatus);
-                    $msg = 'Ficha actualizada correctamente.';
-                }
+
+                $videoType = $_FILES['video']['type'];
+                $videoData = file_get_contents($_FILES['video']['tmp_name']);
             }
 
-            // Respuesta JSON general
+            $request = $this->model->insertFicha(
+                $cedula,
+                $nombre,
+                $edad,
+                $videoData,
+                $videoType
+            );
+
             echo json_encode([
-                'status' => $request_user > 0,
-                'msg' => $request_user > 0 ? $msg : 'No se pudo procesar la ficha.'
-            ], JSON_UNESCAPED_UNICODE);
+                'status' => $request > 0,
+                'msg' => 'Registro guardado correctamente'
+            ]);
             die();
         }
     }
@@ -160,32 +128,6 @@ class Fichas extends Controllers
         }
         die();
     }
-
-    ///pruebas de consulta 
-    // public function getFichas()
-    // {
-    //     // Forzar JSON
-    //     header('Content-Type: application/json; charset=utf-8');
-
-    //     // DEBUG: ver si la sesión y permisos existen
-    //     error_log('DEBUG - session permisosMod: ' . print_r($_SESSION['permisosMod'] ?? 'NO_EXISTE', true));
-
-    //     // Traer datos directamente del modelo (sin chequear permisos para debug)
-    //     $arrData = $this->model->selectFichas();
-
-    //     // DEBUG: registrar lo que retorna el modelo
-    //     error_log('DEBUG - selectFichas result: ' . print_r($arrData, true));
-
-    //     // Si está vacío, devolver mensaje claro para que lo veas en Network -> Response
-    //     if (empty($arrData)) {
-    //         echo json_encode(['debug' => 'empty', 'msg' => 'selectFichas devolvió vacío o hubo error'], JSON_UNESCAPED_UNICODE);
-    //         die();
-    //     }
-
-    //     // Envío crudo para ver exactamente qué llega
-    //     echo json_encode($arrData, JSON_UNESCAPED_UNICODE);
-    //     die();
-    // }
 
 
     // MOSTRAR EN EL FORMULARIO DE EDICION
