@@ -1,26 +1,28 @@
-let tableProgramas;
+let tableAdultoMayor;
 let rowTable = "";
 let divLoading = document.querySelector("#divLoading");
 document.addEventListener(
   "DOMContentLoaded",
   function () {
-    tableProgramas = $("#tableProgramas").DataTable({
+    formAdultomayor = $("#tableAdultoMayor").DataTable({
       aProcessing: true,
       aServerSide: true,
       language: {
         url: "./es.json",
       },
       ajax: {
-        url: base_url + "/Programas/getProgramas",
+        url: base_url + "/Programas/getAdultoMayor",
         dataSrc: "",
       },
 
       columns: [
-        { data: "codigoprograma" },
-        { data: "nivelprograma" },
-        { data: "nombreprograma" },
-        { data: "horasprograma" },
-        { data: "status_ficha" },
+        { data: "numerocedula" },
+        { data: "nombre" },
+        { data: "edad" },
+        { data: "fecha" },
+        { data: "telefono" },
+        { data: "video_tipo" },
+        { data: "status_adultomayor" },
         { data: "options" },
       ],
 
@@ -32,7 +34,7 @@ document.addEventListener(
           titleAttr: "Exportar a Excel",
           className: "btn btn-success mt-3",
           action: function () {
-            window.open(base_url + "/export/export_excel.php?tipo=programas", "_blank");
+            window.open(base_url + "/export/export_excel.php?tipo=gestion", "_blank");
           },
         },
 
@@ -41,7 +43,7 @@ document.addEventListener(
           titleAttr: "Exportar a PDF",
           className: "btn btn-danger mt-3",
           action: function () {
-            window.open(base_url + "/export/export_pdf.php?tipo=programas", "_blank");
+            window.open(base_url + "/export/export_pdf.php?tipo=gestion", "_blank");
           },
         },
       ],
@@ -52,96 +54,156 @@ document.addEventListener(
       order: [[0, "desc"]],
     });
 
-    if (document.querySelector("#formPrograma")) {
-      let formPrograma = document.querySelector("#formPrograma");
-      formPrograma.onsubmit = function (e) {
+    if (document.querySelector("#formAdultomayor")) {
+      let formAdultomayor = document.querySelector("#formAdultomayor");
+
+      formAdultomayor.onsubmit = function (e) {
         e.preventDefault();
 
-        // Mostrar el loader si existe
-        if (typeof divLoading !== "undefined")
-          divLoading.style.display = "flex";
+        Swal.fire({
+          title: "¿Estás seguro?",
+          text: "¿Quieres editar este registro?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, editar",
+          cancelButtonText: "Cancelar",
+          reverseButtons: true,
+        }).then((result) => {
 
-        // Crear petición AJAX
-        let request = window.XMLHttpRequest
-          ? new XMLHttpRequest()
-          : new ActiveXObject("Microsoft.XMLHTTP");
-        let ajaxUrl = base_url + "/Programas/setPrograma";
-        let formData = new FormData(formPrograma);
-
-        request.open("POST", ajaxUrl, true);
-        request.send(formData);
-
-        request.onreadystatechange = function () {
-          if (request.readyState != 4) return;
-
-          // Ocultar loader
-          if (typeof divLoading !== "undefined")
-            divLoading.style.display = "none";
-
-          if (request.status == 200) {
-            let objData = JSON.parse(request.responseText);
-
-            if (objData.status) {
-              // Recargar DataTable (si existe)
-              try {
-                if (
-                  tableProgramas &&
-                  typeof tableProgramas.api === "function"
-                ) {
-                  tableProgramas.api().ajax.reload(null, false);
-                } else if (tableProgramas && tableProgramas.ajax) {
-                  tableProgramas.ajax.reload(null, false);
-                }
-              } catch (error) {
-                console.warn("No se pudo recargar la tabla:", error);
-              }
-
-              // Cerrar modal
-              $("#modalFormPrograma").modal("hide");
-
-              // Limpiar formulario
-              formPrograma.reset();
-
-              // Mostrar alerta y recargar la página
-              swal("Programas", objData.msg, "success");
-              setTimeout(() => location.reload(), 800);
-            } else {
-              swal("Error", objData.msg, "error");
-            }
-          } else {
-            swal("Error", "No se pudo conectar con el servidor.", "error");
+          if (!result.isConfirmed) {
+            return; // ❌ Cancelado
           }
 
-          return false;
-        };
+          // 👉 Continua normalmente con el AJAX
+          if (typeof divLoading !== "undefined")
+            divLoading.style.display = "flex";
+
+          let request = window.XMLHttpRequest
+            ? new XMLHttpRequest()
+            : new ActiveXObject("Microsoft.XMLHTTP");
+
+          let ajaxUrl = base_url + "/Programas/setAdultomayor";
+          let formData = new FormData(formAdultomayor);
+
+          request.open("POST", ajaxUrl, true);
+          request.send(formData);
+
+          request.onreadystatechange = function () {
+            if (request.readyState != 4) return;
+
+            if (typeof divLoading !== "undefined")
+              divLoading.style.display = "none";
+
+            if (request.status == 200) {
+              let objData = JSON.parse(request.responseText);
+
+              if (objData.status) {
+
+                $("#modalFormAdultomayor").modal("hide");
+                formAdultomayor.reset();
+
+                Swal.fire("Actualizado", objData.msg, "success");
+                setTimeout(() => location.reload(), 800);
+
+              } else {
+                Swal.fire("Error", objData.msg, "error");
+              }
+            } else {
+              Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+            }
+          };
+
+        });
       };
     }
+
   },
   false
 );
 
-function fntViewInfo(ideprograma) {
+function verVideo(id) {
+  fntViewVideo(id);
+}
+
+function fntViewVideo(id) {
+  let request = new XMLHttpRequest();
+  let ajaxUrl = base_url + "/Programas/getVideo/" + id;
+  request.open("GET", ajaxUrl, true);
+  request.send();
+
+  request.onreadystatechange = function () {
+    if (request.readyState == 4 && request.status == 200) {
+
+      let objData = JSON.parse(request.responseText);
+
+      if (objData.status) {
+        document.querySelector('#videoSource').src = objData.data.video_url;
+        document.querySelector('#videoTagPreview').load();
+        $('#modalViewVideo').modal('show');
+      } else {
+        swal("Error", objData.msg, "error");
+      }
+    }
+  };
+}
+
+// Cuando se cierre el modal
+$('#modalViewVideo').on('hidden.bs.modal', function () {
+
+  let iframe = document.getElementById('videoPreview');
+  if (iframe) {
+    iframe.src = "";
+  }
+
+  let videoTag = document.getElementById('videoTagPreview');
+  if (videoTag) {
+    videoTag.pause();
+    videoTag.currentTime = 0;
+  }
+});
+
+
+// vista de informacion
+function fntViewInfo(id) {
   let request = window.XMLHttpRequest
     ? new XMLHttpRequest()
     : new ActiveXObject("Microsoft.XMLHTTP");
-  let ajaxUrl = base_url + "/Programas/getPrograma/" + ideprograma;
+  let ajaxUrl = base_url + "/Programas/getVistaAdultoMayor/" + id;
   request.open("GET", ajaxUrl, true);
   request.send();
+
   request.onreadystatechange = function () {
     if (request.readyState == 4 && request.status == 200) {
       let objData = JSON.parse(request.responseText);
       if (objData.status) {
-        document.querySelector("#celIdePrograma").innerHTML =
-          objData.data.ideprograma;
-        document.querySelector("#celCodigoPrograma").innerHTML =
-          objData.data.codigoprograma;
-        document.querySelector("#celNivelPrograma").innerHTML =
-          objData.data.nivelprograma;
-        document.querySelector("#celNombrePrograma").innerHTML =
-          objData.data.nombreprograma;
-        document.querySelector("#celHorasPrograma").innerHTML =
-          objData.data.horasprograma;
-
+        document.querySelector("#celIdeAdulto").innerHTML =
+          objData.data.id;
+        document.querySelector("#celCedulaAdulto").innerHTML =
+          objData.data.numerocedula;
+        document.querySelector("#celNombreAdulto").innerHTML =
+          objData.data.nombre;
+        document.querySelector("#celEdadAdulto").innerHTML =
+          objData.data.edad;
+        document.querySelector("#celFecha").innerHTML =
+          objData.data.fecha;
+        document.querySelector("#celTelefono").innerHTML =
+          objData.data.telefono;
+        document.querySelector("#celVideo").innerHTML =
+          objData.data.video_tipo;
+        document.querySelector("#celVereda").innerHTML =
+          objData.data.vereda;
+        document.querySelector("#celApoderado").innerHTML =
+          objData.data.apoderado;
+        document.querySelector("#celCedulaApoderado").innerHTML =
+          objData.data.cedulaapoderado;
+        document.querySelector("#celFechapago").innerHTML =
+          objData.data.fecha_pago;
+        document.querySelector("#celEstado").innerHTML =
+          objData.data.estado;
+        document.querySelector("#celCiclo").innerHTML =
+          objData.data.ciclo;
+        document.querySelector("#celDescripcion").innerHTML =
+          objData.data.descripcion;
         $("#modalViewPrograma").modal("show");
       } else {
         swal("Error", objData.msg, "error");
@@ -150,9 +212,10 @@ function fntViewInfo(ideprograma) {
   };
 }
 
+// Función para editar
 function fntEditInfo(element, ideprograma) {
   rowTable = element.parentNode.parentNode.parentNode;
-  document.querySelector("#titleModal").innerHTML = "Actualizar Programa";
+  document.querySelector("#titleModal").innerHTML = "Actualizar informacion del adulto mayor";
   document
     .querySelector(".modal-header")
     .classList.replace("headerRegister", "headerUpdate");
@@ -163,32 +226,63 @@ function fntEditInfo(element, ideprograma) {
   let request = window.XMLHttpRequest
     ? new XMLHttpRequest()
     : new ActiveXObject("Microsoft.XMLHTTP");
-  let ajaxUrl = base_url + "/Programas/getPrograma/" + ideprograma;
+  let ajaxUrl = base_url + "/Programas/getVistaAdultoMayorEditar/" + ideprograma;
   request.open("GET", ajaxUrl, true);
   request.send();
   request.onreadystatechange = function () {
     if (request.readyState == 4 && request.status == 200) {
       let objData = JSON.parse(request.responseText);
       if (objData.status) {
-        document.querySelector("#idePrograma").value = objData.data.ideprograma;
-        document.querySelector("#txtCodigoPrograma").value =
-          objData.data.codigoprograma;
-        document.querySelector("#txtNivelPrograma").value =
-          objData.data.nivelprograma;
-        document.querySelector("#txtNombrePrograma").value =
-          objData.data.nombreprograma;
-        document.querySelector("#txtHorasPrograma").value =
-          objData.data.horasprograma;
+        document.querySelector("#adultoid").value = objData.data.id;
+
+        document.querySelector("#txtNumeroCedula").value =
+          objData.data.numerocedula;
+
+        // document.querySelector("#txtNivelPrograma").value =
+        //   objData.data.nivelprograma;
+
+        document.querySelector("#txtNombreAdulto").value =
+          objData.data.nombre;
+
+        document.querySelector("#txtFecha").value =
+          objData.data.fecha;
+
+        document.querySelector("#txtEdadAdulto").value =
+          objData.data.edad;
+
+        document.querySelector("#txttelefono").value =
+          objData.data.telefono;
+
+        document.querySelector("#txtVereda").value =
+          objData.data.vereda;
+
+        document.querySelector("#txtNombreApoderado").value =
+          objData.data.apoderado;
+
+        document.querySelector("#txtNumeroCedulaApoderado").value =
+          objData.data.cedulaapoderado;
+
+        document.querySelector("#txtFechapago").value =
+          objData.data.fecha_pago;
+
+        document.querySelector("#txtEstado").value =
+          objData.data.estado;
+
+        document.querySelector("#txtNumeroCiclos").value =
+          objData.data.ciclo;
+
+        document.querySelector("#txtDescripcion").value =
+          objData.data.descripcion;
       }
     }
-    $("#modalFormPrograma").modal("show");
+    $("#modalFormAdultomayor").modal("show");
   };
 }
 
 // ELIMINAR
-function fntDelInfo(ideprograma) {
+function fntDelInfo(idAdulto) {
   Swal.fire({
-    title: "¿Eliminar Programa?",
+    title: "¿Eliminar registro?",
     text: "No podrás revertir esta acción",
     icon: "warning",
     showCancelButton: true,
@@ -199,10 +293,10 @@ function fntDelInfo(ideprograma) {
   }).then((result) => {
     if (!result.isConfirmed) return;
 
-    fetch(base_url + "/Programas/delPrograma", {
+    fetch(base_url + "/Programas/getEliminarAdulto", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "idePrograma=" + ideprograma,
+      body: "idadulto=" + idAdulto,
     })
       .then((res) => res.json())
       .then((objData) => {
@@ -214,18 +308,18 @@ function fntDelInfo(ideprograma) {
         Swal.fire("¡Eliminado!", objData.msg, "success");
 
         // 🔹 Guardar la página actual del DataTable
-        let currentPage = tableProgramas.page
-          ? tableProgramas.page()
-          : tableProgramas.api().page();
+        let currentPage = formAdultomayor.page
+          ? formAdultomayor.page()
+          : formAdultomayor.api().page();
 
         // 🔹 Recargar datos sin perder la página
-        $.getJSON(base_url + "/Programas/getProgramas", function (data) {
-          if (tableProgramas.clear) {
-            tableProgramas.clear().rows.add(data).draw();
-            tableProgramas.page(currentPage).draw(false);
+        $.getJSON(base_url + "/Programas/getAdultoMayor", function (data) {
+          if (formAdultomayor.clear) {
+            formAdultomayor.clear().rows.add(data).draw();
+            formAdultomayor.page(currentPage).draw(false);
           } else {
-            tableProgramas.api().clear().rows.add(data).draw();
-            tableProgramas.api().page(currentPage).draw(false);
+            formAdultomayor.api().clear().rows.add(data).draw();
+            formAdultomayor.api().page(currentPage).draw(false);
           }
         });
       })
@@ -236,6 +330,7 @@ function fntDelInfo(ideprograma) {
   });
 }
 
+// para todos los modal de ver, editar y eliminar
 function openModal() {
   rowTable = "";
   document.querySelector("#idePrograma").value = "";
@@ -247,6 +342,40 @@ function openModal() {
     .classList.replace("btn-info", "btn-primary");
   document.querySelector("#btnText").innerHTML = "Guardar";
   document.querySelector("#titleModal").innerHTML = "Nuevo Programa";
-  document.querySelector("#formPrograma").reset();
-  $("#modalFormPrograma").modal("show");
+  document.querySelector("#formAdultomayor").reset();
+  $("#modalFormAdultomayor").modal("show");
 }
+
+
+// Delegación de eventos para reparar los onClick destruidos por DataTables
+$(document).on("click", "button", function (e) {
+
+  // VER VIDEO
+  if (this.getAttribute("onClick")?.includes("verVideo")) {
+    let id = this.getAttribute("onClick").match(/\d+/)[0];
+    verVideo(id);
+  }
+
+  // VER INFORMACIÓN
+  if (this.getAttribute("onClick")?.includes("fntViewInfo")) {
+    let id = this.getAttribute("onClick").match(/\d+/)[0];
+    fntViewInfo(id);
+  }
+
+  // EDITAR
+  if (this.getAttribute("onClick")?.includes("fntEditInfo")) {
+    let parts = this.getAttribute("onClick").match(/fntEditInfo\(this,(\d+)\)/);
+    if (parts) {
+      let id = parts[1];
+      fntEditInfo(this, id);
+    }
+  }
+
+  // ELIMINAR
+  if (this.getAttribute("onClick")?.includes("fntDelInfo")) {
+    let id = this.getAttribute("onClick").match(/\d+/)[0];
+    fntDelInfo(id);
+  }
+
+});
+

@@ -32,52 +32,54 @@ class FichasModel extends Mysql
         return $this->select_all($sql);
     }
 
-
-    //VISTA INFORMACIÓN PROGRAMA
-    public function selectFicha(int $ideficha)
-    {
-        $this->intIdeFicha = $ideficha;
-
-        $sql = "SELECT 
-            tf.ideficha,
-            tf.numeroficha AS numeroficha,   -- 👈 alias obligatorio
-            tf.usuarioide,
-            tf.programaide,
-            tf.status AS status_ficha,
-            tp.ideprograma,
-            tp.codigoprograma,
-            tp.nivelprograma,
-            tp.nombreprograma,
-            tp.horasprograma,
-            tp.status AS status_programa,
-            tu.ideusuario,
-            tu.identificacion AS identificacion,  -- 👈 alias obligatorio
-            tu.nombres,
-            tu.apellidos,
-            tu.imgperfil,
-            tu.rolid,
-            tu.status AS status_usuario
-        FROM tbl_fichas tf
-        INNER JOIN tbl_programas tp 
-            ON tp.ideprograma = tf.programaide
-        INNER JOIN tbl_usuarios tu 
-            ON tu.ideusuario = tf.usuarioide
-        WHERE tf.ideficha = ?";
-
-
-        $request = $this->select($sql, [$this->intIdeFicha]);
-        return $request;
-    }
-
-
     /// insertar ficha A LA BASE DE DATOS 
-    public function insertFicha($cedula, $nombre, $edad, $video, $videoType)
-    {
+    public function insertFicha(
+        $cedula,
+        $nombre,
+        $edad,
+        $fecha,
+        $telefono,
+        $video,
+        $videoType,
+        $vereda,
+        $apoderado,
+        $cedulaapodera,
+        $fechapago,
+        $estado,
+        $ciclo,
+        $descripcion
+    ) {
 
-        $sql = "INSERT INTO videosadultomayor (numerocedula, nombre, edad, video, video_tipo)
-            VALUES (?, ?, ?, ?, ?)";
+        // 1️⃣ Verificar si la cédula ya existe
+        $sqlExist = "SELECT id FROM videosadultomayor WHERE numerocedula = ?";
+        $arrExist = array($cedula);
+        $exist = $this->select($sqlExist, $arrExist);
 
-        $arrData = array($cedula, $nombre, $edad, $video, $videoType);
+        if (!empty($exist)) {
+            return -1; // ya existe
+        }
+
+        // 2️⃣ Insertar nuevo registro
+        $sql = "INSERT INTO videosadultomayor 
+        (numerocedula, nombre, edad, fecha, telefono, video, video_tipo, vereda, apoderado, cedulaapoderado, fecha_pago, Estado, ciclo, descripción)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $arrData = array(
+            $cedula,
+            $nombre,
+            $edad,
+            $fecha,
+            $telefono,
+            $video,
+            $videoType,
+            $vereda,
+            $apoderado,
+            $cedulaapodera,
+            $fechapago,
+            $estado,
+            $ciclo,
+            $descripcion
+        );
 
         return $this->insert($sql, $arrData);
     }
@@ -113,7 +115,6 @@ class FichasModel extends Mysql
 
         return $request;
     }
-
 
 
     //VISTA INFORMACIÓN PROGRAMA

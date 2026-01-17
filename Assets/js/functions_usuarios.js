@@ -26,6 +26,7 @@ document.addEventListener(
         { data: "status" },
         { data: "options" },
       ],
+
       dom: "lBfrtip",
       buttons: [
         {
@@ -63,41 +64,57 @@ document.addEventListener(
         let formData = new FormData(formUsuario);
         let request = new XMLHttpRequest();
         request.open("POST", base_url + "/Usuarios/setUsuario", true);
+
         request.onreadystatechange = function () {
           if (request.readyState === 4) {
+
             divLoading.style.display = "none";
+
             if (request.status === 200) {
               let objData = JSON.parse(request.responseText);
-              if (objData.status) {
-                $("#modalFormUsuario").modal("hide");
-                formUsuario.reset();
 
-                if (rowTable === "") {
-                  tableUsuarios.ajax.reload(null, false);
+              if (objData.status) {
+
+                // Detectar si fue EDITADO
+                if (objData.msg === "editado") {
+                  Swal.fire({
+                    icon: "success",
+                    title: "Actualizado",
+                    text: "El usuario fue editado correctamente.",
+                  });
                 } else {
+                  // Registrado nuevo
+                  Swal.fire({
+                    icon: "success",
+                    title: "Registrado",
+                    text: "El usuario fue registrado correctamente.",
+                  });
+                }
+
+                // Recargar tabla y luego cerrar modal
+                tableUsuarios.ajax.reload(function () {
+                  $("#modalFormUsuario").modal("hide");
+                  formUsuario.reset();
+                  rowTable = "";
+                }, false);
+
+                // Si es edición actualizar la fila manualmente
+                if (rowTable !== "") {
                   let intStatus = document.querySelector("#listStatus").value;
                   let htmlStatus =
                     intStatus == 1
                       ? '<span class="badge text-bg-success">Activo</span>'
                       : '<span class="badge text-bg-danger">Inactivo</span>';
 
-                  tableUsuarios.ajax.reload(null, false);
-                  rowTable.cells[1].textContent = document.querySelector(
-                    "#txtIdentificacionUsuario"
-                  ).value;
+                  rowTable.cells[1].textContent =
+                    document.querySelector("#txtIdentificacionUsuario").value;
+
                   rowTable.cells[2].textContent =
-                    document.querySelector(
-                      "#txtRolUsuario"
-                    ).selectedOptions[0].text;
+                    document.querySelector("#txtRolUsuario").selectedOptions[0].text;
+
                   rowTable.cells[3].innerHTML = htmlStatus;
-                  rowTable = "";
                 }
 
-                Swal.fire({
-                  icon: "success",
-                  title: "¡Éxito!",
-                  text: objData.msg,
-                });
               } else {
                 Swal.fire({
                   icon: "warning",
@@ -105,6 +122,7 @@ document.addEventListener(
                   text: objData.msg,
                 });
               }
+
             } else {
               Swal.fire({
                 icon: "error",
@@ -114,9 +132,11 @@ document.addEventListener(
             }
           }
         };
+
         request.send(formData);
       });
     }
+
   },
   false
 );
@@ -161,50 +181,7 @@ function fntViewInfo(ideusuario) {
   };
 }
 
-// editar el usuario
-function fntEditInfo(element, ideusuario) {
-  rowTable = element.parentNode.parentNode.parentNode;
-  document.querySelector("#titleModal").innerHTML = "Actualizar Usuario";
-  document
-    .querySelector(".modal-header")
-    .classList.replace("headerRegister", "headerUpdate");
-  document
-    .querySelector("#btnActionForm")
-    .classList.replace("btn-primary", "btn-info");
-  document.querySelector("#btnText").innerHTML = "Actualizar";
-  let request = window.XMLHttpRequest
-    ? new XMLHttpRequest()
-    : new ActiveXObject("Microsoft.XMLHTTP");
-  let ajaxUrl = base_url + "/Usuarios/getUsuario/" + ideusuario;
-  request.open("GET", ajaxUrl, true);
-  request.send();
-  request.onreadystatechange = function () {
-    if (request.readyState == 4 && request.status == 200) {
-      let objData = JSON.parse(request.responseText);
-      if (objData.status) {
-        document.querySelector("#ideUsuario").value = objData.data.ideusuario;
-        document.querySelector("#txtIdentificacionUsuario").value =
-          objData.data.identificacion;
-        document.querySelector("#txtNombresUsuario").value =
-          objData.data.nombres;
-        document.querySelector("#txtApellidosUsuario").value =
-          objData.data.apellidos;
-        document.querySelector("#txtCelularUsuario").value =
-          objData.data.celular;
-        document.querySelector("#txtCorreoUsuario").value = objData.data.correo;
-        document.querySelector("#txtRolUsuario").value = objData.data.idrol;
 
-        // ESTADO ACTIVO O INACTIVO
-        if (objData.data.status == 1) {
-          document.querySelector("#listStatus").value = 1;
-        } else {
-          document.querySelector("#listStatus").value = 2;
-        }
-      }
-    }
-    $("#modalFormUsuario").modal("show");
-  };
-}
 
 // eliminar
 function fntDelInfo(ideusuario) {
@@ -269,5 +246,103 @@ function openModal() {
   document.querySelector("#btnText").innerHTML = "Guardar";
   document.querySelector("#titleModal").innerHTML = "Nuevo Usuario";
   document.querySelector("#formUsuario").reset();
+
+  fntRolesUsuario();  //  <-- ESTA LÍNEA ES OBLIGATORIA
+
   $("#modalFormUsuario").modal("show");
 }
+
+// =========================
+// CARGAR ROLES EN EL SELECT
+// =========================
+function fntRolesUsuario(callback = null) {
+  let selectRol = document.querySelector("#listRol");
+
+  if (!selectRol) {
+    console.warn("⚠ El select #listRol no existe en el DOM.");
+    return;
+  }
+
+  // Mostrar loader
+  selectRol.innerHTML = '<option value="">Cargando roles...</option>';
+
+  let request = new XMLHttpRequest();
+  let ajaxUrl = base_url + "/Usuarios/getSelectRoles";
+  request.open("GET", ajaxUrl, true);
+  request.send();
+
+  request.onreadystatechange = function () {
+    if (request.readyState === 4 && request.status === 200) {
+
+      // Si el backend no envía datos, mostrar mensaje
+      if (request.responseText.trim() === "") {
+        selectRol.innerHTML = '<option value="">No hay roles disponibles</option>';
+        return;
+      }
+
+      // Cargar roles correctamente
+      selectRol.innerHTML =
+        '<option value="">Seleccione un rol</option>' +
+        request.responseText;
+
+      // Ejecutar callback (importante para editar)
+      if (callback) callback();
+    }
+  };
+}
+
+
+
+// =========================
+// EDITAR USUARIO
+// =========================
+function fntEditInfo(element, ideusuario) {
+
+  rowTable = element.parentNode.parentNode.parentNode;
+
+  document.querySelector("#titleModal").innerHTML = "Actualizar Usuario";
+  document.querySelector(".modal-header").classList.replace("headerRegister", "headerUpdate");
+  document.querySelector("#btnActionForm").classList.replace("btn-primary", "btn-info");
+  document.querySelector("#btnText").innerHTML = "Actualizar";
+
+  // 1️⃣ Cargamos roles PRIMERO
+  fntRolesUsuario(() => {
+
+    // 2️⃣ Ahora sí obtenemos los datos del usuario
+    let request = new XMLHttpRequest();
+    let ajaxUrl = base_url + "/Usuarios/getUsuario/" + ideusuario;
+    request.open("GET", ajaxUrl, true);
+    request.send();
+
+    request.onreadystatechange = function () {
+      if (request.readyState == 4 && request.status == 200) {
+        let objData = JSON.parse(request.responseText);
+
+        if (objData.status) {
+
+          document.querySelector("#ideUsuario").value = objData.data.ideusuario;
+          document.querySelector("#txtIdentificacionUsuario").value = objData.data.identificacion;
+          document.querySelector("#txtNombresUsuario").value = objData.data.nombres;
+          document.querySelector("#txtApellidosUsuario").value = objData.data.apellidos;
+          document.querySelector("#txtCelularUsuario").value = objData.data.celular;
+          document.querySelector("#txtCorreoUsuario").value = objData.data.correo;
+
+          // 3️⃣ Seleccionar el rol después de cargar roles
+          document.querySelector("#listRol").value = parseInt(objData.data.idrol);
+
+          // 4️⃣ Estado
+          document.querySelector("#listStatus").value = (objData.data.status == 1 ? 1 : 2);
+        }
+
+        $("#modalFormUsuario").modal("show");
+      }
+    };
+  });
+
+}
+
+
+
+
+
+

@@ -1,23 +1,30 @@
 <?php
 headerAdmin($data);
 ?>
+<style>
+    #modalVideo .modal-content {
+        width: 480px;
+        /* Modal más pequeño */
+        border-radius: 12px;
+    }
+
+    #modalVideo video {
+        max-height: 300px;
+        /* Controla el tamaño del video */
+        object-fit: contain;
+    }
+</style>
 
 <div id="contentAjax"></div>
 <main class="app-content">
     <div class="app-title">
         <div>
-            <h1><i class="bi bi-list-stars"></i> <?=$data['page_title']?></h1>
+            <h1><i class="bi bi-list-stars"></i> <?= $data['page_title'] ?></h1>
         </div>
-        <?php if ($_SESSION['permisosMod']['w']) {?>
-        <button class="btn btn-warning" type="button" data-bs-toggle="modal" onclick="openModal();">
-            <i class="bi bi-plus-lg"></i>
-            Nuevo Programa</button>
-        <?php }?>
-
 
         <ul class="app-breadcrumb breadcrumb">
             <li class="breadcrumb-item"><i class="bi bi-house"></i></li>
-            <li class="breadcrumb-item"><a href="<?=base_url();?>/programas"><?=$data['page_title']?></a></li>
+            <li class="breadcrumb-item"><a href="<?= base_url(); ?>/adultomayor"><?= $data['page_title'] ?></a></li>
         </ul>
     </div>
     <div class="row">
@@ -25,13 +32,15 @@ headerAdmin($data);
             <div class="tile">
                 <div class="tile-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-bordered" id="tableProgramas">
+                        <table class="table table-hover table-bordered" id="tableAdultoMayor">
                             <thead class="table-success">
                                 <tr>
-                                    <th class="text-center">Código</th>
-                                    <th class="text-center">Nivel</th>
-                                    <th class="text-center">Programa</th>
-                                    <th class="text-center">Horas</th>
+                                    <th class="text-center">Numero de cedula</th>
+                                    <th class="text-center">Nombre completo</th>
+                                    <th class="text-center">Edad</th>
+                                    <th class="text-center">Fecha</th>
+                                    <th class="text-center">Telefono</th>
+                                    <th class="text-center">video</th>
                                     <th class="text-center">Estado</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
@@ -44,7 +53,9 @@ headerAdmin($data);
             </div>
         </div>
     </div>
+
 </main>
+
 <?php footerAdmin($data);
 getModal('modalProgramas', $data);
 ?>

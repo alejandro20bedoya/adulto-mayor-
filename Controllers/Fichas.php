@@ -36,9 +36,36 @@ class Fichas extends Controllers
 
         if ($_POST || $_FILES) {
 
+
             $cedula = strClean($_POST['cedula'] ?? '');
             $nombre = strClean($_POST['nombre'] ?? '');
             $edad   = intval($_POST['edad'] ?? 0);
+            $fecha  = date('Y-m-d H:i:s');
+            $telefono = strClean($_POST['telefono'] ?? '');
+            $vereda = strClean($_POST['vereda'] ?? '');
+            $apoderado = strClean($_POST['apoderado'] ?? '');
+            $cedulaapoderado = strClean($_POST['cedulaApoderado'] ?? '');
+            $fechapago = date('Y-m-d H:i:s');
+            $estado = strClean($_POST['Estado'] ?? '');
+            $ciclo = strClean($_POST['Ciclo'] ?? '');
+            $descripcion = strClean($_POST['Descripción'] ?? '');
+            
+            // var_dump(
+            //     $cedula,
+            //     $nombre,
+            //     $edad,  
+            //     $fecha,
+            //     $telefono,
+            //     $vereda,
+            //     $apoderado,
+            //     $cedulaapoderado,
+            //     $fechapago,
+            //     $estado,
+            //     $ciclo,
+            //     $descripcion
+
+            // );
+            // die();
 
             $videoData = null;
             $videoType = null;
@@ -62,9 +89,28 @@ class Fichas extends Controllers
                 $cedula,
                 $nombre,
                 $edad,
+                $fecha,
+                $telefono,
                 $videoData,
-                $videoType
+                $videoType,
+                $vereda,
+                $apoderado,
+                $cedulaapoderado,
+                $fechapago,
+                $estado,
+                $ciclo,
+                $descripcion
+                 
             );
+
+            // 🔥 Respuesta según lo que devuelva el Model
+            if ($request == -1) {
+                echo json_encode([
+                     'status' => 'exist',
+                    'msg' => 'La cédula ya se encuentra registrada'
+                ]);
+                die();
+            }
 
             echo json_encode([
                 'status' => $request > 0,

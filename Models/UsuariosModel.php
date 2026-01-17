@@ -10,6 +10,8 @@ class UsuariosModel extends Mysql
     private $strPassword;
     private $strRolUsuario;
     private $strStatusUsuario;
+    private $strStatus;
+
 
     public function __construct()
     {
@@ -23,18 +25,20 @@ class UsuariosModel extends Mysql
         string $apellidos,
         string $celular,
         string $correo,
-        string $password,
+        // string $password,
         string $rol,
-        string $status
+        string $status,
+        $contrasena
     ) {
         $this->strIdentificacionUsuario = $identificacion;
         $this->strNombresUsuario = $nombres;
         $this->strApellidosUsuario = $apellidos;  /// sonas de cambio 
         $this->strCelularUsuario = $celular;  /// sonas de cambio 
         $this->strCorreoUsuario = $correo;  /// sonas de cambio 
-        $this->strPassword = $password;
+        // $this->strPassword = $password;
         $this->strRolUsuario = $rol;
         $this->strStatusUsuario = $status;
+        $this->strPassword = $contrasena;
 
         $return = 0;
         $sql = "SELECT * FROM tbl_usuarios WHERE
@@ -62,6 +66,12 @@ class UsuariosModel extends Mysql
 
             $request_insert = $this->insert($query_insert, $arrData);
             $return = $request_insert;
+
+            if ($update) {
+                return "editado";   // ← IMPORTANTE
+            } else {
+                return false;
+            }
         } else {
 
             $return = "error";
@@ -80,7 +90,7 @@ class UsuariosModel extends Mysql
                 FROM tbl_usuarios u 
                 INNER JOIN rol r
                 ON u.rolid = r.idrol " . $whereAdmin;
-                
+
         // WHERE u.status != 0 ".$whereAdmin;
         $request = $this->select_all($sql);
         return $request;
@@ -99,7 +109,6 @@ class UsuariosModel extends Mysql
         return $request;
     }
 
-    //ACTUALIZAR USUARIO
     public function updateUsuario(
         int $ideusuario,
         string $identificacion,
@@ -107,10 +116,12 @@ class UsuariosModel extends Mysql
         string $apellidos,
         string $celular,
         string $correo,
-        string $rol,
-        string $status
+        int $rol,
+        int $status,
+        string $contrasena
     ) {
 
+        // 🔹 Guardar valores en propiedades
         $this->intIdeUsuario = $ideusuario;
         $this->strIdentificacionUsuario = $identificacion;
         $this->strNombresUsuario = $nombres;
@@ -119,38 +130,46 @@ class UsuariosModel extends Mysql
         $this->strCorreoUsuario = $correo;
         $this->strRolUsuario = $rol;
         $this->strStatus = $status;
+        $this->strPassword = $contrasena;
 
-        $sql = "SELECT * FROM tbl_usuarios WHERE (identificacion = '{$this->strIdentificacionUsuario}' AND ideusuario != $this->intIdeUsuario)
-        OR (nombres = '{$this->strNombresUsuario}' AND ideusuario != $this->intIdeUsuario)
-        OR (apellidos = '{$this->strApellidosUsuario}' AND ideusuario != $this->intIdeUsuario)
-        OR (celular = '{$this->strCelularUsuario}' AND ideusuario != $this->intIdeUsuario)
-        OR (correo = '{$this->strCorreoUsuario}' AND ideusuario != $this->intIdeUsuario)
-        OR (rolid = '{$this->strRolUsuario}' AND ideusuario != $this->intIdeUsuario)";
-        $request != $this->select_all($sql);
+        // 🔹 Validación de duplicados
+        $sql = "SELECT * FROM tbl_usuarios 
+            WHERE identificacion = '{$this->strIdentificacionUsuario}' 
+            AND ideusuario != {$this->intIdeUsuario}";
 
+        $request = $this->select_all($sql);
+
+        // Si no existe duplicado -> actualizar
         if (empty($request)) {
-            // TODO PENDIENTE LA VALIDACIÓN SI EL CODIGO ES IGUAL QUE EL CODIGO DE OTRO USUARIO
-            if (($this->strIdentificacionUsuario != "" or $this->strIdentificacionUsuario !=  $this->strIdentificacionUsuario)) {
 
-                $sql = "UPDATE tbl_usuarios SET identificacion=?,nombres=?,apellidos=?,celular=?,correo=?, rolid=?, status=?
-						WHERE ideusuario = $this->intIdeUsuario ";
+            $sql = "UPDATE tbl_usuarios 
+                SET identificacion=?, nombres=?, apellidos=?, celular=?, correo=?, password=?, rolid=?, status=? 
+                WHERE ideusuario = {$this->intIdeUsuario}";
 
-                $arrData = array(
-                    $this->strIdentificacionUsuario,
-                    $this->strNombresUsuario,
-                    $this->strApellidosUsuario,
-                    $this->strCelularUsuario,
-                    $this->strCorreoUsuario,
-                    $this->strRolUsuario,
-                    $this->strStatus
-                );
+            $arrData = array(
+                $this->strIdentificacionUsuario,
+                $this->strNombresUsuario,
+                $this->strApellidosUsuario,
+                $this->strCelularUsuario,
+                $this->strCorreoUsuario,
+                $this->strPassword,
+                $this->strRolUsuario,
+                $this->strStatus
+            );
+
+            $update = $this->update($sql, $arrData);
+
+            if ($update) {
+                return "editado";   // ← IMPORTANTE
+            } else {
+                return false;
             }
-            $request = $this->update($sql, $arrData);
         } else {
-            $request = "exist";
+            return "exist";         // ← Dato duplicado
         }
-        return $request;
     }
+
+
     //eliminar usuario
     public function deleteUsuario(int $intIdeUsuario)
     {

@@ -30,69 +30,79 @@ $sheet = $spreadsheet->getActiveSheet();
 // ==========================
 // 🔹 CONFIGURACIÓN SEGÚN EL TIPO
 // ==========================
-if ($tipo === 'asignaciones') {
-    $titulo = 'Reporte de Asignaciones';
-    $encabezados = [
-        'ID',
-        'Programa',
-        'Instructor',
-        'Competencia',
-        'Horas Realizadas',
-        'Total Horas',
-        'Mes',
-        'Estado',
-        'Fecha'
-    ];
 
-    // Consulta SQL
+if ($tipo === 'gestion') {
+    $titulo = 'Gestion de videos';
+    $encabezados = ['ID', 'Cedula', 'Nombre', 'Edad', 'Fecha', 'Telefono', 'tipo video', 'vereda', 'Apoderado', 'Cedula Apoderado', 'Fecha pago', 'Estado', 'Ciclo', 'Descripcion'];
+
     $sql = "SELECT 
-                idedetalleficha AS ID,
-                programaficha AS Programa,
-                ideinstructor AS Instructor,
-                idecompetencia AS Competencia,
-                horasrealizadas AS Horas_Realizadas,
-                totalhoras AS Total_Horas,
-                mes AS Mes,
-                CASE WHEN status = 1 THEN 'Activo' ELSE 'Inactivo' END AS Estado,
-                created_at AS Fecha
-            FROM tbl_detalle_fichas";
+            id AS ID,
+            numerocedula AS Cedula,
+            nombre AS Nombre,
+            edad AS Edad,
+            fecha AS Fecha,
+            telefono AS Telefono,
+            video_tipo AS `Tipo Video`,
+            vereda AS Vereda,
+            apoderado AS Apoderado,
+            cedulaapoderado AS `Cedula Apoderado`,
+            fecha_pago AS `Fecha Pago`,
+            Estado AS Estado,
+            ciclo AS Ciclo,
+            descripción AS Descripcion
+        FROM videosadultomayor";
 
-
-    // 🔸 Título (unir de C1 a K2)
-    $sheet->mergeCells('C2:K3');
+    // ==========================================================
+    // 🔸 TÍTULO centrado completamente (C → P)
+    // ==========================================================
+    $sheet->mergeCells('C2:P3');   // unimos toda la fila del título
     $sheet->setCellValue('C2', $titulo);
-    $sheet->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle('C2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-    $sheet->getStyle('C2')->getFont()->setBold(true)->setSize(14)->getColor()->setARGB('FF003366');
-    $sheet->getStyle('C2:K3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-    $sheet->getStyle('C2:K2')->getFill()
+    // Alinear título
+    $sheet->getStyle('C2')->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+        ->setVertical(Alignment::VERTICAL_CENTER);
+
+    // Estilo del texto del título
+    $sheet->getStyle('C2')->getFont()
+        ->setBold(true)->setSize(14)->getColor()->setARGB('FF003366');
+
+    // Bordes del área del título
+    $sheet->getStyle('C2:P3')->getBorders()->getAllBorders()
+        ->setBorderStyle(Border::BORDER_THIN);
+
+    // Fondo gris del título
+    $sheet->getStyle('C2:P2')->getFill()
         ->setFillType(Fill::FILL_SOLID)
-        ->getStartColor()->setRGB('E0E0E0'); /// color gris para el fondo de la celda
+        ->getStartColor()->setRGB('E0E0E0');
 
-    //  Espacio entre título y encabezado (fila vacía 3)
-    $sheet->setCellValue('C3', ''); // fila vacía solo para espacio visual
+    // ==========================================================
+    // Espacio entre título y encabezado (fila 3 vacía)
+    // ==========================================================
+    $sheet->setCellValue('C3', '');
 
-    //  Encabezados (fila 4, desde C)
+    // ==========================================================
+    // Encabezados (fila 4)
+    // ==========================================================
     $sheet->fromArray($encabezados, NULL, 'C4');
 
-    // Estilo del encabezado
-    $sheet->getStyle('C4:K4')->applyFromArray([
+    // Estilo de encabezados
+    $sheet->getStyle('C4:P4')->applyFromArray([
         'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
         'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['rgb' => '41B300']],
         'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
     ]);
 
-    // ==========================
+    // ==========================================================
     // 🔹 CONSULTA Y LLENADO DE DATOS
-    // ==========================
+    // ==========================================================
     $result = $conexion->query($sql);
-    $fila = 5; // ⬅️ Comienza una fila más abajo (debajo del encabezado)
+    $fila = 5;
 
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $columna = 'C'; // Inicia en C
+            $columna = 'C';
             foreach ($row as $valor) {
                 $sheet->setCellValue($columna . $fila, $valor);
                 $columna++;
@@ -101,302 +111,32 @@ if ($tipo === 'asignaciones') {
         }
     } else {
         $sheet->setCellValue('C5', 'No se encontraron registros');
-        $sheet->mergeCells('C5:K5');
+        $sheet->mergeCells('C5:P5');
         $sheet->getStyle('C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
-    // ==========================
+    // ==========================================================
     // 🔹 ESTILOS FINALES
-    // ==========================
+    // ==========================================================
 
-    // Ajustar ancho automático (C → K)
-    foreach (range('C', 'K') as $col) {
+    // Ajuste automático de columnas
+    foreach (range('C', 'P') as $col) {
         $sheet->getColumnDimension($col)->setAutoSize(true);
     }
 
-    // Bordes para toda la tabla
+    // Bordes de toda la tabla
     $ultimaFila = $fila - 1;
-    $sheet->getStyle("C4:K$ultimaFila")->applyFromArray([
+    $sheet->getStyle("C4:P$ultimaFila")->applyFromArray([
         'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
     ]);
 
-    // Centrar el texto de los datos
-    $sheet->getStyle("C5:K$ultimaFila")
-        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    // Centrar datos
+    $sheet->getStyle("C5:P$ultimaFila")->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    // ==========================
+    // ==========================================================
     // 🔹 DESCARGA DEL ARCHIVO
-    // ==========================
-    $nombreArchivo = $tipo . ".xlsx";
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header("Content-Disposition: attachment;filename=\"$nombreArchivo\"");
-    header('Cache-Control: max-age=0');
-
-    $writer = new Xlsx($spreadsheet);
-    $writer->save('php://output');
-    exit;
-} else if ($tipo === 'programas') {
-    $titulo = 'Reporte de Programas';
-    $encabezados = ['ID', 'Código', 'Nivel', 'Nombre', 'Horas', 'Estado'];
-
-    $sql = "SELECT ideprograma AS ID, codigoprograma AS Código, nivelprograma AS Nivel, nombreprograma AS Nombre, horasprograma AS Horas, 
-            CASE WHEN status = 1 THEN 'Activo' ELSE 'Inactivo' END AS Estado FROM tbl_programas";
-
-
-    // 🔸 Título (unir de C1 a K2)
-    $sheet->mergeCells('C2:H3');
-    $sheet->setCellValue('C2', $titulo);
-    $sheet->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle('C2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-    $sheet->getStyle('C2')->getFont()->setBold(true)->setSize(14)->getColor()->setARGB('FF003366');
-    $sheet->getStyle('C2:H3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    $sheet->getStyle('C2:H2')->getFill()
-        ->setFillType(Fill::FILL_SOLID)
-        ->getStartColor()->setRGB('E0E0E0'); /// color gris para el fondo de la celda
-
-    //  Espacio entre título y encabezado (fila vacía 3)
-    $sheet->setCellValue('C3', ''); // fila vacía solo para espacio visual
-
-    //  Encabezados (fila 4, desde C)
-    $sheet->fromArray($encabezados, NULL, 'C4');
-
-    // Estilo del encabezado
-    $sheet->getStyle('C4:H4')->applyFromArray([
-        'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
-        'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['rgb' => '41B300']],
-        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
-        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    ]);
-
-    // ==========================
-    // 🔹 CONSULTA Y LLENADO DE DATOS
-    // ==========================
-    $result = $conexion->query($sql);
-    $fila = 5; // ⬅️ Comienza una fila más abajo (debajo del encabezado)
-
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $columna = 'C'; // Inicia en C
-            foreach ($row as $valor) {
-                $sheet->setCellValue($columna . $fila, $valor);
-                $columna++;
-            }
-            $fila++;
-        }
-    } else {
-        $sheet->setCellValue('C5', 'No se encontraron registros');
-        $sheet->mergeCells('C5:H5');
-        $sheet->getStyle('C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    }
-
-    // ==========================
-    // 🔹 ESTILOS FINALES
-    // ==========================
-
-    // Ajustar ancho automático (C → K)
-    foreach (range('C', 'H') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
-    }
-
-    // Bordes para toda la tabla
-    $ultimaFila = $fila - 1;
-    $sheet->getStyle("C4:H$ultimaFila")->applyFromArray([
-        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    ]);
-
-    // Centrar el texto de los datos
-    $sheet->getStyle("C5:H$ultimaFila")
-        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-    // ==========================
-    // 🔹 DESCARGA DEL ARCHIVO
-    // ==========================
-    $nombreArchivo = $tipo . ".xlsx";
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header("Content-Disposition: attachment;filename=\"$nombreArchivo\"");
-    header('Cache-Control: max-age=0');
-
-    $writer = new Xlsx($spreadsheet);
-    $writer->save('php://output');
-    exit;
-} else if ($tipo === 'competencias') {
-    $titulo = 'Reporte de Competencias';
-    $encabezados = ['Codigo', 'Numero Ficha', 'tipo competenciad', 'Nombre de la competencia', 'Horas', 'codigo programa'];
-
-    // consulta SQL
-    $sql = "SELECT 
-    tc.codigocompetencia AS Codigo,
-    tf.numeroficha AS NumeroFicha,
-    tc.tipocompetencia AS TipoCompetencia,
-    tc.nombrecompetencia AS NombreCompetencia,
-    tc.horascompetencia AS Horas,
-    tc.programacodigo AS CodigoPrograma
-    FROM tbl_competencias tc
-    LEFT JOIN tbl_fichas tf 
-        ON tf.ideficha = tc.fichaide
-    WHERE tc.status != 0
-    ORDER BY tc.codigocompetencia ASC";
-
-    // 🔸 Título (unir de C1 a K2)
-    $sheet->mergeCells('C2:H3');
-    $sheet->setCellValue('C2', $titulo);
-    $sheet->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle('C2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-    $sheet->getStyle('C2')->getFont()->setBold(true)->setSize(14)->getColor()->setARGB('FF003366');
-    $sheet->getStyle('C2:H3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    $sheet->getStyle('C2:H2')->getFill()
-        ->setFillType(Fill::FILL_SOLID)
-        ->getStartColor()->setRGB('E0E0E0'); /// color gris para el fondo de la celda
-
-    //  Espacio entre título y encabezado (fila vacía 3)
-    $sheet->setCellValue('C3', ''); // fila vacía solo para espacio visual
-
-    //  Encabezados (fila 4, desde C)
-    $sheet->fromArray($encabezados, NULL, 'C4');
-
-    // Estilo del encabezado
-    $sheet->getStyle('C4:H4')->applyFromArray([
-        'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
-        'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['rgb' => '41B300']],
-        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
-        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    ]);
-
-    // ==========================
-    // 🔹 CONSULTA Y LLENADO DE DATOS
-    // ==========================
-    $result = $conexion->query($sql);
-    $fila = 5; // ⬅️ Comienza una fila más abajo (debajo del encabezado)
-
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $columna = 'C'; // Inicia en C
-            foreach ($row as $valor) {
-                $sheet->setCellValue($columna . $fila, $valor);
-                $columna++;
-            }
-            $fila++;
-        }
-    } else {
-        $sheet->setCellValue('C5', 'No se encontraron registros');
-        $sheet->mergeCells('C5:H5');
-        $sheet->getStyle('C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    }
-
-    // ==========================
-    // 🔹 ESTILOS FINALES
-    // ==========================
-
-    // Ajustar ancho automático (C → K)
-    foreach (range('C', 'H') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
-    }
-
-    // Bordes para toda la tabla
-    $ultimaFila = $fila - 1;
-    $sheet->getStyle("C4:H$ultimaFila")->applyFromArray([
-        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    ]);
-
-    // Centrar el texto de los datos
-    $sheet->getStyle("C5:H$ultimaFila")
-        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-    // ==========================
-    // 🔹 DESCARGA DEL ARCHIVO
-    // ==========================
-    $nombreArchivo = $tipo . ".xlsx";
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header("Content-Disposition: attachment;filename=\"$nombreArchivo\"");
-    header('Cache-Control: max-age=0');
-
-    $writer = new Xlsx($spreadsheet);
-    $writer->save('php://output');
-    exit;
-} else if ($tipo === 'fichas') {
-    $titulo = 'Reporte de Fichas';
-    $encabezados = ['Ficha', 'Programa', 'Instructor'];
-
-    // consulta SQL
-    $sql = "SELECT 
-                tf.numeroficha,
-                tp.nombreprograma,
-                tu.nombres
-            FROM tbl_fichas tf
-            LEFT JOIN tbl_programas tp ON tp.ideprograma = tf.programaide
-            LEFT JOIN tbl_usuarios tu  ON tu.ideusuario = tf.usuarioide";
-
-    // 🔸 Título (unir de C1 a K2)
-    $sheet->mergeCells('C2:E3');
-    $sheet->setCellValue('C2', $titulo);
-    $sheet->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle('C2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-    $sheet->getStyle('C2')->getFont()->setBold(true)->setSize(14)->getColor()->setARGB('FF003366');
-    $sheet->getStyle('C2:E3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    $sheet->getStyle('C2:E2')->getFill()
-        ->setFillType(Fill::FILL_SOLID)
-        ->getStartColor()->setRGB('E0E0E0'); /// color gris para el fondo de la celda
-
-    //  Espacio entre título y encabezado (fila vacía 3)
-    $sheet->setCellValue('C3', ''); // fila vacía solo para espacio visual
-
-    //  Encabezados (fila 4, desde C)
-    $sheet->fromArray($encabezados, NULL, 'C4');
-
-    // Estilo del encabezado
-    $sheet->getStyle('C4:E4')->applyFromArray([
-        'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
-        'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['rgb' => '41B300']],
-        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
-        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    ]);
-
-    // ==========================
-    // 🔹 CONSULTA Y LLENADO DE DATOS
-    // ==========================
-    $result = $conexion->query($sql);
-    $fila = 5; // ⬅️ Comienza una fila más abajo (debajo del encabezado)
-
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $columna = 'C'; // Inicia en C
-            foreach ($row as $valor) {
-                $sheet->setCellValue($columna . $fila, $valor);
-                $columna++;
-            }
-            $fila++;
-        }
-    } else {
-        $sheet->setCellValue('C5', 'No se encontraron registros');
-        $sheet->mergeCells('C5:E5');
-        $sheet->getStyle('C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    }
-
-    // ==========================
-    // 🔹 ESTILOS FINALES
-    // ==========================
-
-    // Ajustar ancho automático (C → K)
-    foreach (range('C', 'E') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
-    }
-
-    // Bordes para toda la tabla
-    $ultimaFila = $fila - 1;
-    $sheet->getStyle("C4:E$ultimaFila")->applyFromArray([
-        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    ]);
-
-    // Centrar el texto de los datos
-    $sheet->getStyle("C5:E$ultimaFila")
-        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-    // ==========================
-    // 🔹 DESCARGA DEL ARCHIVO
-    // ==========================
+    // ==========================================================
     $nombreArchivo = $tipo . ".xlsx";
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header("Content-Disposition: attachment;filename=\"$nombreArchivo\"");

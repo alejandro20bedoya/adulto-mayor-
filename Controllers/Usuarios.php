@@ -44,13 +44,14 @@ class Usuarios extends Controllers
                 $strCelularUsuario = strClean($_POST['txtCelularUsuario']);
                 $strCorreoUsuario = strClean($_POST['txtCorreoUsuario']);
                 $strRolUsuario = intval(strClean($_POST['listRol']));
+                $contrasena =  strClean($_POST['txtContrasenaUsuario']);
                 $intStatus = intval(strClean($_POST['listStatus']));
 
                 // $intTipoId = 5;
                 $request_user = "";
                 if ($intIdeUsuario == 0) {
                     $option = 1;
-                    $strPassword =  empty($_POST['txtIdentificacionUsuario']) ? hash("SHA256", passGenerator()) : hash("SHA256", $_POST['txtIdentificacionUsuario']);
+                    // $strPassword =  empty($_POST['txtIdentificacionUsuario']) ? hash("SHA256", passGenerator()) : hash("SHA256", $_POST['txtIdentificacionUsuario']);
                     if ($_SESSION['permisosMod']['w']) {
                         $request_user = $this->model->insertUsuario(
                             $strIdentificacionUsuario,
@@ -58,15 +59,16 @@ class Usuarios extends Controllers
                             $strApellidosUsuario, /// sonas de cambio 
                             $strCelularUsuario, /// sonas de cambio 
                             $strCorreoUsuario, /// sonas de cambio 
-                            $strPassword,
+                            // $strPassword,
                             $strRolUsuario,
-                            $intStatus
+                            $intStatus,
+                            $contrasena
 
                         );
                     }
                 } else {
                     $option = 2;
-                    $strPassword =  empty($_POST['txtIdentificacionUsuario']) ? hash("SHA256", passGenerator()) : hash("SHA256", $_POST['txtIdentificacionUsuario']);
+                    // $strPassword =  empty($_POST['txtIdentificacionUsuario']) ? hash("SHA256", passGenerator()) : hash("SHA256", $_POST['txtIdentificacionUsuario']);
                     if ($_SESSION['permisosMod']['u']) {
                         $request_user = $this->model->updateUsuario(
                             $intIdeUsuario,
@@ -77,6 +79,8 @@ class Usuarios extends Controllers
                             $strCorreoUsuario,
                             $strRolUsuario,
                             $intStatus,
+                            $contrasena
+                            // $strPassword
                         );
                     }
                 }
@@ -183,6 +187,21 @@ class Usuarios extends Controllers
                 echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
             }
         }
+        die();
+    }
+
+    public function getSelectRoles()
+    {
+        $htmlOptions = "";
+        $arrData = $this->model->selectRoles();
+
+        if (count($arrData) > 0) {
+            foreach ($arrData as $rol) {
+                $htmlOptions .= '<option value="' . $rol['idrol'] . '">' . $rol['nombrerol'] . '</option>';
+            }
+        }
+
+        echo $htmlOptions;
         die();
     }
 }

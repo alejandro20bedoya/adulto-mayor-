@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Sigma">
-    <link rel="shortcut icon" href="<?=media();?>/images/clock-fill.svg">
+    <link rel="shortcut icon" href="<?= media(); ?>/images/clock-fill.svg">
 
     <!-- Main CSS-->
-    <link rel="stylesheet" type="text/css" href="<?=media();?>/css/main.css">
+    <link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/main.css">
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -18,15 +18,24 @@
     https://cdn.jsdelivr.net/npm/bootstrap-sweetalert@1.0.1/dist/sweetalert.min.css
     " rel="stylesheet">
 
-    <title><?=$data['page_tag'];?></title>
+    <title><?= $data['page_tag']; ?></title>
 </head>
+
+<style>
+    .logo img {
+        width: 250px;
+        /* Ajusta el tamaño que quieras */
+        height: auto;
+        /* Mantiene la proporción */
+    }
+</style>
 
 <body>
     <section class="material-half-bg">
         <div class="cover"></div>
     </section>
     <section class="login-content">
-        <div class="logo"><img src="Assets/images/ombe.png" alt="">
+        <div class="logo"><img src="Assets/images/logoadulto.png" alt="">
         </div>
         <div class="login-box">
             <div id="divLoading">
@@ -37,7 +46,7 @@
 
             <form class="login-form" name="formLogin" id="formLogin" action="">
                 <h3 class="login-head"><i class="bi bi-person-fill"></i> Iniciar Sesión</h3>
-                
+
 
                 <div class="mb-3">
                     <br>
@@ -66,34 +75,34 @@
 
     <!-- ORIGINAL -->
     <script>
-    const base_url = "<?=base_url();?>";
+        const base_url = "<?= base_url(); ?>";
     </script>
 
     <!-- Essential javascripts for application to work-->
-    <script src="<?=media();?>/js/jquery-3.7.0.min.js"></script>
+    <script src="<?= media(); ?>/js/jquery-3.7.0.min.js"></script>
 
-    <script src="<?=media();?>/js/popper.min.js"></script>
+    <script src="<?= media(); ?>/js/popper.min.js"></script>
 
-    <script src="<?=media();?>/js/bootstrap.min.js"></script>
+    <script src="<?= media(); ?>/js/bootstrap.min.js"></script>
 
-    <script src="<?=media();?>/js/fontawesome.js"></script>
+    <script src="<?= media(); ?>/js/fontawesome.js"></script>
 
-    <script src="<?=media();?>/js/main.js"></script>
+    <script src="<?= media(); ?>/js/main.js"></script>
     <script type="text/javascript">
-    // Login Page Flipbox control
-    $('.login-content [data-toggle="flip"]').click(function() {
-        $('.login-box').toggleClass('flipped');
-        return false;
-    });
+        // Login Page Flipbox control
+        $('.login-content [data-toggle="flip"]').click(function() {
+            $('.login-box').toggleClass('flipped');
+            return false;
+        });
     </script>
 
     <!-- JavaScript-->
-    <script src="<?=media();?>/js/plugins/pace.min.js"></script>
+    <script src="<?= media(); ?>/js/plugins/pace.min.js"></script>
     <script src="
 https://cdn.jsdelivr.net/npm/bootstrap-sweetalert@1.0.1/dist/sweetalert.min.js
 "></script>
 
-    <script src="<?=media();?>/js/<?=$data['page_functions_js'];?>"></script>
+    <script src="<?= media(); ?>/js/<?= $data['page_functions_js']; ?>"></script>
 
 </body>
 

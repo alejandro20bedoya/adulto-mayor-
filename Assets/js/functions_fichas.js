@@ -67,7 +67,6 @@ document.addEventListener(
         if (inputVideo && inputVideo.files.length > 0) {
           const file = inputVideo.files[0];
 
-          // Validar que sea video
           if (!file.type.startsWith("video/")) {
             Swal.fire({
               icon: "error",
@@ -99,6 +98,7 @@ document.addEventListener(
           };
 
           video.src = URL.createObjectURL(file);
+
         } else {
           // Si no hay video, enviamos normal
           enviarFormulario();
@@ -111,9 +111,15 @@ document.addEventListener(
       function enviarFormulario() {
         let formData = new FormData(formFicha);
 
-        if (typeof divLoading !== "undefined") {
-          divLoading.style.display = "flex";
-        }
+        // 🔵 MUESTRA "Guardando datos..." CON LOADER
+        Swal.fire({
+          title: "Guardando datos...",
+          text: "Por favor espera",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
 
         let request = new XMLHttpRequest();
         request.open("POST", base_url + "/Fichas/setFicha", true);
@@ -121,14 +127,12 @@ document.addEventListener(
 
         request.onreadystatechange = function () {
           if (request.readyState === 4) {
-            if (typeof divLoading !== "undefined") {
-              divLoading.style.display = "none";
-            }
+
+            Swal.close(); // 🔥 Cerrar loader automáticamente
 
             console.log("🔵 Status HTTP:", request.status);
             console.log("🔵 Respuesta cruda:", request.responseText);
 
-            // ❌ Error de servidor
             if (request.status !== 200) {
               Swal.fire({
                 icon: "error",
@@ -150,7 +154,6 @@ document.addEventListener(
               return;
             }
 
-            // ✅ Respuesta correcta
             if (objData.status === true) {
               formFicha.reset();
               Swal.fire({
@@ -158,12 +161,14 @@ document.addEventListener(
                 title: "Éxito",
                 text: objData.msg
               });
+
             } else if (objData.status === "exist") {
               Swal.fire({
-                icon: "warning",
-                title: "Atención",
-                text: objData.msg
+                icon: "info",
+                title: "Cédula ya registrada",
+                text: "Por favor verifica el número ingresado."
               });
+
             } else {
               Swal.fire({
                 icon: "error",
@@ -175,6 +180,8 @@ document.addEventListener(
         };
       }
     }
+
+
   },
   false
 );

@@ -14,7 +14,7 @@ class Login extends Controllers
 
     public function login()
     {
-        $data['page_tag'] = "Iniciar Sesión - Sigma";
+        $data['page_tag'] = "Iniciar Sesión - adulto mayor";
         $data['page_title'] = "Sigma";
         $data['page_name'] = "login";
         $data['page_functions_js'] = "functions_login.js";

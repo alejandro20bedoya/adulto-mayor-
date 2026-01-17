@@ -11,6 +11,12 @@ headerAdmin($data);
         box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, 0.25);
         color: #000;
     }
+
+    P {
+        font-size: 15px;
+        font-weight: bold;
+        color: #ff0000ff;
+    }
 </style>
 
 <div id="contentAjax"></div>
@@ -30,61 +36,127 @@ headerAdmin($data);
 
         <div class="row">
             <div class="card-body">
-                <form id="adultomy" name="adultomy" enctype="multipart/form-data" method="POST">
+                <div class="container d-flex justify-content-center">
+                    <div class="col-md-8">
 
-                    <!-- Fila 1 -->
-                    <div class="row justify-content-center">
+                        <?php if ($_SESSION['permisosMod']['w']) { ?>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="cedula" class="form-label">Número de cédula</label>
-                            <input type="text" class="form-control"
-                                id="cedula" name="cedula"
-                                placeholder="Ingrese número de cédula" required>
-                        </div>
+                            <form id="adultomy" name="adultomy" enctype="multipart/form-data" method="POST">
 
-                        <div class="col-md-6 mb-3">
-                            <label for="nombre" class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control"
-                                id="nombre" name="nombre"
-                                placeholder="Ingrese nombre completos" required>
-                        </div>
+                                <!-- Fila 1 -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cedula" class="form-label">Número de cédula</label>
+                                        <input type="text" class="form-control"
+                                            id="cedula" name="cedula"
+                                            placeholder="Ingrese número de cédula" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="nombre" class="form-label">Nombre completo</label>
+                                        <input type="text" class="form-control"
+                                            id="nombre" name="nombre"
+                                            placeholder="Ingrese nombre completo" required>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 2 -->
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <label for="edad" class="form-label">Edad</label>
+                                        <input type="number"
+                                            class="form-control text-center"
+                                            id="edad" name="edad"
+                                            placeholder="0" min="0" required>
+                                    </div>
+
+                                    <div class="col-md-9 mb-3">
+                                        <label for="video" class="form-label">Subir video</label>
+                                        <input type="file"
+                                            class="form-control"
+                                            id="video" name="video"
+                                            accept="video/*" required>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 3 -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha" class="form-label">Fecha</label>
+                                        <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="telefono" class="form-label">Teléfono</label>
+                                        <input type="number" class="form-control" id="telefono" name="telefono" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="vereda" class="form-label">Vereda</label>
+                                        <input type="text" class="form-control" id="vereda" name="vereda" required>
+                                    </div>
+                                </div>
+
+                                <P>NOMBRE DEL APODERADO DEL ADULTO MAYOR</P>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="apoderado" class="form-label">Nombre del apoderado</label>
+                                        <input type="text" class="form-control"
+                                            id="apoderado" name="apoderado" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cedulaApoderado" class="form-label">Numero de cédula</label>
+                                        <input type="number" class="form-control"
+                                            id="cedulaApoderado" name="cedulaApoderado" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fechapago" class="form-label">Fecha de pago</label>
+                                        <input type="date" class="form-control" id="fechapago" name="fechapago" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Estado" class="form-label">Estado</label>
+                                        <select class="form-select" id="Estado" name="Estado" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Verificado</option>
+                                            <option value="0">No verificado</option>
+                                        </select>
+                                    </div>
+
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Ciclo" class="form-label">Numero de ciclo del mes </label>
+                                        <input type="number" class="form-control"
+                                            id="Ciclo" name="Ciclo" placeholder="0" min="0" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Descripción" class="form-label">Descripción</label>
+                                        <input type="text" class="form-control"
+                                            id="Descripción" name="Descripción">
+                                    </div>
+                                </div>
+
+                                <!-- Botón -->
+                                <div class="row mt-3">
+                                    <div class="col text-end">
+                                        <button type="submit" class="btn btn-success px-3">
+                                            Guardar información
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                        <?php } ?>
 
                     </div>
+                </div>
 
-                    <!-- Fila 2 (MISMA ESTRUCTURA) -->
-                    <div class="row justify-content-center">
 
-                        <!-- Edad alineada con cédula -->
-                        <div class="col-md-3 mb-3">
-                            <label for="edad" class="form-label">Edad</label>
-                            <input type="number"
-                                class="form-control form-control-sm text-center"
-                                id="edad" name="edad"
-                                placeholder="0" min="0" required
-                                style="max-width: 80px;">
-                        </div>
-
-                        <!-- Video alineado con nombre -->
-                        <div class="col-md-6 mb-3">
-                            <label for="video" class="form-label">Subir video</label>
-                            <input type="file"
-                                class="form-control"
-                                id="video" name="video"
-                                accept="video/*" required>
-                        </div>
-
-                    </div>
-
-                    <!-- Botón -->
-                    <div class="row mt-1">
-                        <div class="col-md-2 offset-md-9">
-                            <button type="submit" class="btn btn-success px-1">
-                                Guardar información
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
             </div>
         </div>
 

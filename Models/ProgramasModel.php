@@ -2,6 +2,8 @@
 class ProgramasModel extends Mysql
 {
     private $intIdePrograma;
+    private $intIdeAdulto;
+    private $intIdPrograma;
     private $strCodigoPrograma;
     private $strNivelPrograma;
     private $strNombrePrograma;
@@ -14,119 +16,231 @@ class ProgramasModel extends Mysql
         parent::__construct();
     }
 
-    public function insertPrograma(
-        string $codigo,
-        string $nivel,
-        string $nombreprograma,
-        string $horasprograma,
-        String $status
+    public function updateAdultomayor(
+        int $id,
+        int $numerocedula,
+        string $nombre,
+        int $edad,
+        string $fecha,
+        string $telefono,
+        $videoData,
+        $videoType,
+        string $vereda,
+        string $apoderado,
+        string $cedulaapoderado,
+        string $fechapago,
+        string $estado,
+        string $numerociclos,
+        string $descripcion
     ) {
-        $this->strCodigoPrograma = $codigo;
-        $this->strNivelPrograma = $nivel;
-        $this->strNombrePrograma = $nombreprograma;
-        $this->strHorasPrograma = $horasprograma;
-        $this->strStatus = $status;
 
-        $return = 0;
-        $sql = "SELECT * FROM tbl_programas WHERE
-				codigoprograma = '{$this->strCodigoPrograma}'";
-        $request = $this->select_all($sql);
+        // ▶ Si viene video nuevo
+        if ($videoData !== null && $videoType !== null) {
 
-        if (empty($request)) {
-
-            $query_insert = "INSERT INTO tbl_programas(codigoprograma,nivelprograma,nombreprograma,horasprograma,status)
-            VALUES(?,?,?,?,?)";
+            $sql = "UPDATE videosadultomayor 
+            SET numerocedula = ?, 
+                nombre = ?, 
+                edad = ?, 
+                fecha = ?, 
+                telefono = ?, 
+                video = ?, 
+                video_tipo = ?, 
+                vereda = ?,
+                apoderado = ?,
+                cedulaapoderado = ?,
+                fecha_pago = ?,
+                Estado = ?,
+                ciclo = ?,
+                descripción = ?
+            WHERE id = ?";
 
             $arrData = array(
-                $this->strCodigoPrograma,
-                $this->strNivelPrograma,
-                $this->strNombrePrograma,
-                $this->strHorasPrograma,
-                $this->strStatus
+                $numerocedula,
+                $nombre,
+                $edad,
+                $fecha,
+                $telefono,
+                $videoData,
+                $videoType,
+                $vereda,
+                $apoderado,
+                $cedulaapoderado,
+                $fechapago,
+                $estado,
+                $numerociclos,
+                $descripcion,
+                $id
             );
-
-            $request_insert = $this->insert($query_insert, $arrData);
-            $return = $request_insert;
         } else {
-            $return = "exist";
+
+            // ▶ Sin video
+            $sql = "UPDATE videosadultomayor 
+            SET numerocedula = ?, 
+                nombre = ?, 
+                edad = ?, 
+                fecha = ?, 
+                telefono = ?,
+                vereda = ?,
+                apoderado = ?,
+                cedulaapoderado = ?,
+                fecha_pago = ?,
+                Estado = ?,
+                ciclo = ?,
+                descripción = ?
+            WHERE id = ?";
+
+            $arrData = array(
+                $numerocedula,
+                $nombre,
+                $edad,
+                $fecha,
+                $telefono,
+                $vereda,
+                $apoderado,
+                $cedulaapoderado,
+                $fechapago,
+                $estado,
+                $numerociclos,
+                $descripcion,
+                $id
+            );
         }
-        return $return;
+
+        return $this->update($sql, $arrData);
     }
+
 
     // LISTADO DE LA TABLA
     public function selectProgramas()
     {
         $sql = "SELECT 
-                ideprograma,
-                codigoprograma,
-                nivelprograma,
-                nombreprograma,
-                horasprograma,
-                status AS status_ficha
-            FROM tbl_programas";
+                id,
+                numerocedula,
+                nombre,
+                edad,
+                fecha,
+                telefono,
+                video_tipo,
+                Estado AS status_adultomayor
+            FROM videosadultomayor";
         $request = $this->select_all($sql);
+        return $request;
+    }
+
+    // para reproduci el video
+    public function selectVideo(int $id)
+    {
+        $sql = "SELECT video, video_tipo 
+                FROM videosadultomayor 
+                WHERE id = $id";
+
+        $request = $this->select($sql);
         return $request;
     }
 
     //VISTA INFORMACIÓN PROGRAMA
     public function selectPrograma(int $ideprograma)
     {
+
+
         $this->intIdePrograma = $ideprograma;
-        $sql = "SELECT *
-    			FROM tbl_programas
-    			WHERE ideprograma = $this->intIdePrograma";
+
+        $sql = "SELECT 
+    			id,
+    			numerocedula,
+    			nombre,
+    			edad,
+    			fecha,
+    			telefono,
+    			video_tipo
+    			FROM videosadultomayor
+    			WHERE id = $this->intIdePrograma";
         $request = $this->select($sql);
         return $request;
     }
 
-    //ACTUALIZAR PROGRAMA
-    public function updatePrograma(
-        int $idePrograma,
-        string $codigo,
-        string $nivel,
-        string $nombreprograma,
-        string $horasprograma,
-        String $status
-    ) {
+    //VISTA INFORMACIÓN PROGRAMA
+    public function selectadultomayor(int $ideprograma)
+    {
 
-        $this->intIdePrograma = $idePrograma;
-        $this->strCodigoPrograma = $codigo;
-        $this->strNivelPrograma = $nivel;
-        $this->strNombrePrograma = $nombreprograma;
-        $this->strHorasPrograma = $horasprograma;
-        $this->strStatus = $status;
 
-        $sql = "SELECT * FROM tbl_programas WHERE (codigoprograma = '{$this->strCodigoPrograma}' AND ideprograma != $this->intIdePrograma)
-        OR (nombreprograma = '{$this->strNombrePrograma}' AND ideprograma != $this->intIdePrograma)";
+        $this->intIdePrograma = $ideprograma;
 
-        $request = $this->select_all($sql);
-
-        if (empty($request)) {
-            // TODO PENDIENTE LA VALIDACIÓN SI EL CODIGO ES IGUAL QUE EL CODIGO DE OTRO PROGRAMA
-            if (($this->strCodigoPrograma != "" or $this->strCodigoPrograma !=  $this->strCodigoPrograma)) {
-
-                $sql = "UPDATE tbl_programas SET codigoprograma=?, nivelprograma=?, nombreprograma=?, horasprograma=?, status=?
-						WHERE ideprograma = $this->intIdePrograma ";
-
-                $arrData = array(
-                    $this->strCodigoPrograma,
-                    $this->strNivelPrograma,
-                    $this->strNombrePrograma,
-                    $this->strHorasPrograma,
-                    $this->strStatus
-                );
-            }
-            $request = $this->update($sql, $arrData);
-        } else {
-            $request = "exist";
-        }
+        $sql = "SELECT 
+    			id,
+    			numerocedula,
+    			nombre,
+    			edad,
+    			fecha,
+    			telefono,
+    			video_tipo
+    			FROM videosadultomayor
+    			WHERE id = $this->intIdePrograma";
+        $request = $this->select($sql);
         return $request;
     }
 
-    public function deletePrograma(int $intIdePrograma)
+    //VISTA INFORMACIÓN PROGRAMA
+    public function selectadultomayorver(int $ideprograma)
     {
-        $this->intIdePrograma = $intIdePrograma;
-        $sql = "DELETE FROM tbl_programas WHERE ideprograma = $this->intIdePrograma";
+
+
+        $this->intIdePrograma = $ideprograma;
+
+        $sql = "SELECT 
+    			id,
+    			numerocedula,
+    			nombre,
+    			edad,
+    			fecha,
+    			telefono,
+    			video_tipo,
+                vereda,
+                apoderado,
+                cedulaapoderado,
+                fecha_pago,
+                Estado as estado,
+                ciclo,
+                descripción as descripcion
+    			FROM videosadultomayor
+    			WHERE id = $this->intIdePrograma";
+        $request = $this->select($sql);
+        return $request;
+    }
+
+    // vista del editar
+    public function selectadultomayoreditar(int $ideprograma)
+    {
+
+
+        $this->intIdePrograma = $ideprograma;
+
+        $sql = "SELECT 
+    			id,
+    			numerocedula,
+    			nombre,
+    			edad,
+    			fecha,
+    			telefono,
+    			video_tipo,
+                vereda,
+                apoderado,
+                cedulaapoderado,
+                fecha_pago,
+                Estado as estado,
+                ciclo,
+                descripción as descripcion
+    			FROM videosadultomayor
+    			WHERE id = $this->intIdePrograma";
+        $request = $this->select($sql);
+        return $request;
+    }
+
+    // eliminar 
+    public function deleteAdulto(int $idAdultoMayor)
+    {
+        $this->intIdeAdulto = $idAdultoMayor;
+        $sql = "DELETE FROM videosadultomayor WHERE id = $this->intIdeAdulto";
         $request = $this->delete($sql);
         return $request;
     }

@@ -14,7 +14,7 @@
                     <div class="tile-body">
                         <form id="formUsuario"" name=" formUsuario" enctype="multipart/form-data" method="POST">
                             <!-- id de los usuarios    -->
-                            <input type="text" id="ideUsuario"" name=" ideUsuario"" value="">
+                            <input type="hidden" id="ideUsuario"" name=" ideUsuario"" value="">
                             <div class="modal-body">
                                 <p class="text-primary">Los campos con asterisco (<span class="required">*</span>) son
                                     obligatorios.
@@ -64,16 +64,13 @@
                             </div>
 
                             <div class="modal-body">
-                                <label for="listRol" class="form-label fw-bold">Rol de Usuario</label>
-                                <select class="form-select form-select-lg mb-3 text-dark bg-light rounded" id="listRol" name="listRol" required>
+                                <label for="listRol">Rol del Usuario</label>
+                                <select class="form-control" id="listRol" name="listRol" required>
                                     <option value="">Seleccione un rol</option>
-                                    <option value="1">Administrador</option>
-                                    <option value="2">Coordinador</option>
-                                    <option value="4">Instructor</option>
-                                    <option value="5">Aprendiz</option>
-                                    <option value="6">Usuario</option>
                                 </select>
                             </div>
+
+
 
                             <div class="modal-body">
                                 <label for="listStatus" class="form-label fw-bold">Estado</label>
@@ -83,6 +80,22 @@
                                     <option value="2">Inactivo</option>
                                 </select>
                             </div>
+
+                            <div class="modal-body">
+                                <label for="txtContrasenaUsuario">Contraseña <span class="required">*</span></label>
+
+                                <div class="input-group">
+                                    <input type="text"
+                                        class="form-control valid validText"
+                                        id="txtContrasenaUsuario"
+                                        name="txtContrasenaUsuario"
+                                        maxlength="40">
+                                </div>
+                            </div>
+
+
+
+                            <hr>
 
 
                             <div class="modal-footer">

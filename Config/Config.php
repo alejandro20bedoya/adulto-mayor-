@@ -50,4 +50,3 @@ const PINICIO = 1;
 //Roles
 const RADMINISTRADOR = 1;
 const RCOORDINADOR = 2;
-

@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="Sigma">
+    <meta name="description" content="Adulto mayor">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="TPS La Jagua de Ibirico">
+    <meta name="author" content="TPS dabaiba">
     <link rel="shortcut icon" href="<?= media(); ?>/images/clock-fill.svg">
     <title><?= $data['page_tag'] ?></title>
 
