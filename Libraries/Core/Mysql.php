@@ -6,11 +6,19 @@ class Mysql extends Conexion
     private $strquery;
     private $arrValues;
 
+
     public function __construct()
     {
-        $this->conexion = new Conexion();
-        $this->conexion = $this->conexion->conect();
+        $conexion = new Conexion();
+        $this->conexion = $conexion->conect();
+
+        if (!$this->conexion instanceof PDO) {
+            throw new RuntimeException(
+                'No se pudo establecer una conexión PDO con MySQL.'
+            );
+        }
     }
+
 
     // Insertar un registro
     // Insertar un registro (SOPORTA LONGBLOB)

@@ -106,6 +106,9 @@ class UsuariosModel extends Mysql
                 ON u.rolid = r.idrol
                 WHERE u.ideusuario = $this->intIdeUsuario";
         $request = $this->select($sql);
+
+        // var_dump($request);
+
         return $request;
     }
 
@@ -184,11 +187,14 @@ class UsuariosModel extends Mysql
         return $request;
     }
 
+
     public function selectRoles()
     {
-        $sql = "SELECT idrol, nombrerol, descripcion, status 
-            FROM rol 
-            WHERE status != 0";
+        $sql = "SELECT idrol, nombrerol, descripcion, status
+            FROM rol
+            WHERE status != 0
+            AND idrol != 1";
+
         $request = $this->select_all($sql);
         return $request;
     }

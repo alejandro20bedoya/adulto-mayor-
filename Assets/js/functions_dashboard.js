@@ -42,42 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, interval);
 });
 
-document.getElementById("selectFicha").addEventListener("change", function () {
-    const ficha = this.value;
-
-    fetch(base_url + "/Dashboard/getProgresoAsignacion/" + ficha)
-        .then(response => response.json())
-        .then(data => {
-            const nuevoProgreso = data.progreso || 0;
-            actualizarProgreso(nuevoProgreso);
-        })
-        .catch(error => console.error("Error al consultar progreso:", error));
-});
-
-function actualizarProgreso(value) {
-    const percent = document.querySelector(".percent");
-    const progressCircle = percent.querySelector(".progress");
-    const progressText = document.getElementById("progressValue");
-
-    const circumference = 440;
-    const targetOffset = circumference - (circumference * value) / 100;
-
-    let current = 0;
-    const duration = 2000; // 2 segundos
-    const interval = 20;
-    const step = value / (duration / interval);
-
-    clearInterval(window.timerProgreso);
-    window.timerProgreso = setInterval(() => {
-        current += step;
-        if (current >= value) {
-            current = value;
-            clearInterval(window.timerProgreso);
-        }
-        progressCircle.style.strokeDashoffset = circumference - (circumference * current) / 100;
-        progressText.innerHTML = Math.round(current) + "<span>%</span>";
-    }, interval);
-}
 
 document.getElementById("buscarCompetencia").addEventListener("keyup", function () {
     let filtro = this.value.toLowerCase();

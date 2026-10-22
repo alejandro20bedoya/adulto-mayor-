@@ -143,49 +143,56 @@ function fntEditRol(idrol) {
 }
 
 function fntDelRol(idrol) {
-  var idrol = idrol;
-  swal(
-    {
-      title: "Eliminar Rol",
-      text: "¿Realmente quiere eliminar el Rol?",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si, eliminar!",
-      cancelButtonText: "No, cancelar!",
-      closeOnConfirm: false,
-      closeOnCancel: true,
-    },
-    function (isConfirm) {
-      if (isConfirm) {
-        var request = window.XMLHttpRequest
-          ? new XMLHttpRequest()
-          : new ActiveXObject("Microsoft.XMLHTTP");
-        var ajaxUrl = base_url + "/Roles/delRol/";
-        var strData = "idrol=" + idrol;
-        request.open("POST", ajaxUrl, true);
-        request.setRequestHeader(
-          "Content-type",
-          "application/x-www-form-urlencoded"
-        );
-        request.send(strData);
-        request.onreadystatechange = function () {
-          if (request.readyState == 4 && request.status == 200) {
-            var objData = JSON.parse(request.responseText);
-            if (objData.status) {
-              swal("Eliminar!", objData.msg, "success");
-              tableRoles.api().ajax.reload(function () {
-                fntEditRol();
-                fntDelRol();
-                fntPermisos();
-              });
-            } else {
-              swal("Atención!", objData.msg, "error");
-            }
-          }
-        };
-      }
+  Swal.fire({
+    title: "Eliminar Rol",
+    text: "¿Realmente quiere eliminar el Rol?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "No, cancelar"
+  }).then(function (result) {
+    if (!result.isConfirmed) {
+      return;
     }
-  );
+
+    var request = new XMLHttpRequest();
+    var ajaxUrl = base_url + "/Roles/delRol/";
+    var formData = new URLSearchParams();
+    formData.append("idrol", idrol);
+
+    request.open("POST", ajaxUrl, true);
+    request.setRequestHeader(
+      "Content-Type",
+      "application/x-www-form-urlencoded"
+    );
+
+    request.onload = function () {
+      if (request.status === 200) {
+        try {
+          var objData = JSON.parse(request.responseText);
+
+          if (objData.status) {
+            Swal.fire("¡Eliminado!", objData.msg, "success");
+            tableRoles.api().ajax.reload(null, false);
+          } else {
+            Swal.fire("Atención", objData.msg, "error");
+          }
+        } catch (error) {
+          console.error(request.responseText);
+          Swal.fire("Error", "La respuesta del servidor no es válida.", "error");
+        }
+      } else {
+        console.error("HTTP:", request.status, request.responseText);
+        Swal.fire("Error", "No se pudo procesar la eliminación.", "error");
+      }
+    };
+
+    request.onerror = function () {
+      Swal.fire("Error", "No se pudo conectar con el servidor.", "error");
+    };
+
+    request.send(formData.toString());
+  });
 }
 
 function fntPermisos(idrol) {

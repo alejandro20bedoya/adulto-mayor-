@@ -98,9 +98,7 @@
 
     <!-- JavaScript-->
     <script src="<?= media(); ?>/js/plugins/pace.min.js"></script>
-    <script src="
-https://cdn.jsdelivr.net/npm/bootstrap-sweetalert@1.0.1/dist/sweetalert.min.js
-"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-sweetalert@1.0.1/dist/sweetalert.min.js"></script>
 
     <script src="<?= media(); ?>/js/<?= $data['page_functions_js']; ?>"></script>
 

@@ -68,7 +68,7 @@
             <li>
                 <a class="app-menu__item" href="<?= base_url(); ?>/fichas">
                     <i class="app-menu__icon bi bi-clipboard-plus"></i>
-                    <span class="app-menu__label">Videos adulto mayor</span>
+                    <span class="app-menu__label">Registro Adulto Mayor</span>
                 </a>
             </li>
 

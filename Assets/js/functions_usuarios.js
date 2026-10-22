@@ -181,8 +181,6 @@ function fntViewInfo(ideusuario) {
   };
 }
 
-
-
 // eliminar
 function fntDelInfo(ideusuario) {
   Swal.fire({
@@ -291,13 +289,11 @@ function fntRolesUsuario(callback = null) {
   };
 }
 
-
-
 // =========================
 // EDITAR USUARIO
 // =========================
-function fntEditInfo(element, ideusuario) {
 
+function fntEditInfo(element, ideusuario) {
   rowTable = element.parentNode.parentNode.parentNode;
 
   document.querySelector("#titleModal").innerHTML = "Actualizar Usuario";
@@ -305,40 +301,69 @@ function fntEditInfo(element, ideusuario) {
   document.querySelector("#btnActionForm").classList.replace("btn-primary", "btn-info");
   document.querySelector("#btnText").innerHTML = "Actualizar";
 
-  // 1️⃣ Cargamos roles PRIMERO
-  fntRolesUsuario(() => {
-
-    // 2️⃣ Ahora sí obtenemos los datos del usuario
+  // 1. Cargar los roles antes de consultar el usuario
+  fntRolesUsuario(function () {
     let request = new XMLHttpRequest();
     let ajaxUrl = base_url + "/Usuarios/getUsuario/" + ideusuario;
+
     request.open("GET", ajaxUrl, true);
     request.send();
 
     request.onreadystatechange = function () {
-      if (request.readyState == 4 && request.status == 200) {
-        let objData = JSON.parse(request.responseText);
+      if (request.readyState !== 4) return;
 
-        if (objData.status) {
+      if (request.status === 200) {
+        try {
+          let objData = JSON.parse(request.responseText);
 
-          document.querySelector("#ideUsuario").value = objData.data.ideusuario;
-          document.querySelector("#txtIdentificacionUsuario").value = objData.data.identificacion;
-          document.querySelector("#txtNombresUsuario").value = objData.data.nombres;
-          document.querySelector("#txtApellidosUsuario").value = objData.data.apellidos;
-          document.querySelector("#txtCelularUsuario").value = objData.data.celular;
-          document.querySelector("#txtCorreoUsuario").value = objData.data.correo;
+          if (objData.status) {
+            let usuario = objData.data;
 
-          // 3️⃣ Seleccionar el rol después de cargar roles
-          document.querySelector("#listRol").value = parseInt(objData.data.idrol);
+            document.querySelector("#ideUsuario").value = usuario.ideusuario;
+            document.querySelector("#txtIdentificacionUsuario").value = usuario.identificacion;
+            document.querySelector("#txtNombresUsuario").value = usuario.nombres;
+            document.querySelector("#txtApellidosUsuario").value = usuario.apellidos;
+            document.querySelector("#txtCelularUsuario").value = usuario.celular;
+            document.querySelector("#txtCorreoUsuario").value = usuario.correo;
 
-          // 4️⃣ Estado
-          document.querySelector("#listStatus").value = (objData.data.status == 1 ? 1 : 2);
+            // 2. Seleccionar el rol mediante su ID
+            const selectRol = document.querySelector("#listRol");
+            const idRolUsuario = String(usuario.rolid);
+
+            // Si el rol ya no está disponible, agregarlo temporalmente
+            let opcionRol = Array.from(selectRol.options).find(
+              opcion => opcion.value === idRolUsuario
+            );
+
+            if (!opcionRol && usuario.nombrerol) {
+              opcionRol = new Option(
+                usuario.nombrerol,
+                idRolUsuario
+              );
+              selectRol.add(opcionRol);
+            }
+
+            selectRol.value = idRolUsuario;
+
+            // 3. Seleccionar el estado
+            document.querySelector("#listStatus").value =
+              Number(usuario.status) === 1 ? "1" : "2";
+
+            $("#modalFormUsuario").modal("show");
+          } else {
+            swal("Atención", objData.msg || "No se encontró el usuario.", "error");
+          }
+        } catch (error) {
+          console.error("Error al procesar usuario:", error);
+          console.error(request.responseText);
+          swal("Error", "No se pudo interpretar la respuesta del servidor.", "error");
         }
-
-        $("#modalFormUsuario").modal("show");
+      } else {
+        console.error("Error HTTP:", request.status);
+        swal("Error", "No se pudieron cargar los datos del usuario.", "error");
       }
     };
   });
-
 }
 
 

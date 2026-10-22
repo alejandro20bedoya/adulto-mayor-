@@ -1,5 +1,4 @@
 <?php
-
 class Roles extends Controllers
 {
     public function __construct()
@@ -34,7 +33,10 @@ class Roles extends Controllers
             $btnEdit = '';
             $btnDelete = '';
             $arrData = $this->model->selectRoles();
-
+            // Ocultar el Super Administrador (ID 1) a todos los usuarios
+            $arrData = array_values(array_filter($arrData, function ($rol) {
+                return (int) $rol['idrol'] !== 1;
+            }));
             for ($i = 0; $i < count($arrData); $i++) {
 
                 if ($arrData[$i]['status'] == 1) {
@@ -62,7 +64,7 @@ class Roles extends Controllers
 
                 if ($_SESSION['permisosMod']['d']) {
 
-                        $btnDelete = '<button class="btn btn-danger btn-sm btnDelRol" onClick="fntDelRol(' . $arrData[$i]['idrol'] . ')" title="Eliminar"><i class="bi bi-trash3"></i></button></div>';
+                    $btnDelete = '<button class="btn btn-danger btn-sm btnDelRol" onClick="fntDelRol(' . $arrData[$i]['idrol'] . ')" title="Eliminar"><i class="bi bi-trash3"></i></button></div>';
                 } else {
                     $btnDelete = '<button class="btn btn-secondary btn-sm" disabled ><i class="fas fa-key"></i></button>';
                 }
@@ -160,5 +162,4 @@ class Roles extends Controllers
         }
         die();
     }
-
 }

@@ -1,0 +1,15 @@
+
+# Configuración privada
+.env
+.env.*
+!.env.example
+Config/Config.local.php
+
+# Archivos temporales
+*.log
+.DS_Store
+Thumbs.db
+
+# Copias de seguridad
+*.bak
+*.old

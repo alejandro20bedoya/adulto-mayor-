@@ -12,6 +12,10 @@ class Permisos extends Controllers
         $rolid = intval($idrol);
         if ($rolid > 0) {
             $arrModulos = $this->model->selectModulos();
+            // Ocultar el módulo Administrador (ID 1)
+            $arrModulos = array_values(array_filter($arrModulos, function ($modulo) {
+                return (int) $modulo['idmodulo'] !== 1;
+            }));
             $arrPermisosRol = $this->model->selectPermisosRol($rolid);
             $arrRol = $this->model->getRol($rolid);
             $arrPermisos = array('r' => 0, 'w' => 0, 'u' => 0, 'd' => 0);
@@ -26,7 +30,8 @@ class Permisos extends Controllers
                 for ($i = 0; $i < count($arrModulos); $i++) {
                     $arrPermisos = array('r' => 0, 'w' => 0, 'u' => 0, 'd' => 0);
                     if (isset($arrPermisosRol[$i])) {
-                        $arrPermisos = array('r' => $arrPermisosRol[$i]['r'],
+                        $arrPermisos = array(
+                            'r' => $arrPermisosRol[$i]['r'],
                             'w' => $arrPermisosRol[$i]['w'],
                             'u' => $arrPermisosRol[$i]['u'],
                             'd' => $arrPermisosRol[$i]['d'],
@@ -65,5 +70,4 @@ class Permisos extends Controllers
         }
         die();
     }
-
 }
