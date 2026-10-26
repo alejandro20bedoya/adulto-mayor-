@@ -35,8 +35,8 @@ headerAdmin($data);
                         <table class="table table-hover table-bordered" id="tableAdultoMayor">
                             <thead class="table-success">
                                 <tr>
-                                    <th class="text-center">Numero de cedula</th>
-                                    <th class="text-center">Nombre completo</th>
+                                    <th class="text-center">cedula</th>
+                                    <th class="text-center">Nombre</th>
                                     <th class="text-center">Edad</th>
                                     <th class="text-center">Fecha</th>
                                     <th class="text-center">Telefono</th>

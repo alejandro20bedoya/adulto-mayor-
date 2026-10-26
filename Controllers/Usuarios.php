@@ -44,7 +44,7 @@ class Usuarios extends Controllers
                 $strCelularUsuario = strClean($_POST['txtCelularUsuario']);
                 $strCorreoUsuario = strClean($_POST['txtCorreoUsuario']);
                 $strRolUsuario = intval(strClean($_POST['listRol']));
-                $contrasena =  strClean($_POST['txtContrasenaUsuario']);
+                $contrasena = $_POST['txtContrasenaUsuario'] ?? '';
                 $intStatus = intval(strClean($_POST['listStatus']));
 
                 // $intTipoId = 5;

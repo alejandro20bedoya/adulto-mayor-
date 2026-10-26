@@ -21,62 +21,49 @@ class UsuariosModel extends Mysql
     // insertar datos a la base de datos o gregar usuario
     public function insertUsuario(
         string $identificacion,
-        string $nombres,  // sonas de cambio 
+        string $nombres,
         string $apellidos,
         string $celular,
         string $correo,
-        // string $password,
         string $rol,
         string $status,
-        $contrasena
+        string $contrasena
     ) {
-        $this->strIdentificacionUsuario = $identificacion;
-        $this->strNombresUsuario = $nombres;
-        $this->strApellidosUsuario = $apellidos;  /// sonas de cambio 
-        $this->strCelularUsuario = $celular;  /// sonas de cambio 
-        $this->strCorreoUsuario = $correo;  /// sonas de cambio 
-        // $this->strPassword = $password;
-        $this->strRolUsuario = $rol;
-        $this->strStatusUsuario = $status;
-        $this->strPassword = $contrasena;
+        // Comprobar si la identificación ya existe
+        $sql = "SELECT identificacion
+            FROM tbl_usuarios
+            WHERE identificacion = ?";
 
-        $return = 0;
-        $sql = "SELECT * FROM tbl_usuarios WHERE
-				identificacion = '{$this->strIdentificacionUsuario}'";
-        $request = $this->select_all($sql);
+        $request = $this->select_all($sql, [$identificacion]);
 
-
-
-        if (empty($request)) {
-
-            // $rs = 1;
-            $query_insert = "INSERT INTO tbl_usuarios(identificacion,nombres,apellidos,celular,correo,password,rolid,status)
-            VALUES(?,?,?,?,?,?,?,?)";
-
-            $arrData = array(
-                $this->strIdentificacionUsuario,
-                $this->strNombresUsuario,   // sonas de cambio 
-                $this->strApellidosUsuario,
-                $this->strCelularUsuario,
-                $this->strCorreoUsuario,
-                $this->strPassword,
-                $this->strRolUsuario,
-                $this->strStatusUsuario
-            );
-
-            $request_insert = $this->insert($query_insert, $arrData);
-            $return = $request_insert;
-
-            if ($update) {
-                return "editado";   // ← IMPORTANTE
-            } else {
-                return false;
-            }
-        } else {
-
-            $return = "error";
+        if (!empty($request)) {
+            return "exist";
         }
-        return $return;
+
+        // Comprobar que se haya enviado una contraseña
+        if (trim($contrasena) === '') {
+            return false;
+        }
+
+        // Guardar la contraseña de forma segura
+        $passwordHash = $contrasena;
+
+        $query_insert = "INSERT INTO tbl_usuarios
+        (identificacion, nombres, apellidos, celular, correo, password, rolid, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $arrData = array(
+            $identificacion,
+            $nombres,
+            $apellidos,
+            $celular,
+            $correo,
+            $passwordHash,
+            $rol,
+            $status
+        );
+
+        return $this->insert($query_insert, $arrData);
     }
 
     // LISTADO DE LA TABLA
