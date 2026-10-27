@@ -196,6 +196,7 @@ class ProgramasModel extends Mysql
     			telefono,
     			video_tipo,
                 vereda,
+                zona,
                 apoderado,
                 cedulaapoderado,
                 fecha_pago,

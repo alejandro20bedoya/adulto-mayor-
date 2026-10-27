@@ -46,7 +46,7 @@ headerAdmin($data);
                                 <!-- Fila 1 -->
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="cedula" class="form-label">Número de cédula</label>
+                                        <label for="cedula" class="form-label">cédula</label>
                                         <input type="text" class="form-control"
                                             id="cedula" name="cedula"
                                             placeholder="Ingrese número de cédula" required>
@@ -87,13 +87,22 @@ headerAdmin($data);
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="telefono" class="form-label">Teléfono</label>
+                                        <label for="telefono" class="form-label">Celular</label>
                                         <input type="number" class="form-control" id="telefono" name="telefono" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="vereda" class="form-label">Vereda</label>
+                                        <label for="vereda" class="form-label">Ubicacción</label>
                                         <input type="text" class="form-control" id="vereda" name="vereda" required>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <label for="zona" class="form-label">Zona</label>
+                                        <select class="form-select" id="zona" name="zona" required>
+                                            <option value="">Seleccione una zona</option>
+                                            <option value="Rural">Rural</option>
+                                            <option value="Urbano">Urbano</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -107,7 +116,7 @@ headerAdmin($data);
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="cedulaApoderado" class="form-label">Numero de cédula</label>
+                                        <label for="cedulaApoderado" class="form-label">cédula</label>
                                         <input type="number" class="form-control"
                                             id="cedulaApoderado" name="cedulaApoderado" required>
                                     </div>
@@ -136,7 +145,7 @@ headerAdmin($data);
                                     <div class="col-md-6 mb-3">
                                         <label for="Descripción" class="form-label">Descripción</label>
                                         <input type="text" class="form-control"
-                                            id="Descripción" name="Descripción">
+                                            id="descripcion" name="descripcion">
                                     </div>
                                 </div>
 

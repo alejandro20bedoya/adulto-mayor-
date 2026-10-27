@@ -192,14 +192,27 @@ function fntViewInfo(id) {
           objData.data.video_tipo;
         document.querySelector("#celVereda").innerHTML =
           objData.data.vereda;
+        document.querySelector("#celZona").innerHTML =
+          objData.data.zona;
         document.querySelector("#celApoderado").innerHTML =
           objData.data.apoderado;
         document.querySelector("#celCedulaApoderado").innerHTML =
           objData.data.cedulaapoderado;
         document.querySelector("#celFechapago").innerHTML =
           objData.data.fecha_pago;
-        document.querySelector("#celEstado").innerHTML =
-          objData.data.estado;
+        // Mostrar el estado de verificación
+        let estado = objData.data.estado;
+
+        if (estado == 1) {
+          document.querySelector("#celEstado").innerHTML =
+            '<span class="badge bg-success">Verificado</span>';
+        } else if (estado == 0) {
+          document.querySelector("#celEstado").innerHTML =
+            '<span class="badge bg-danger">No verificado</span>';
+        } else {
+          document.querySelector("#celEstado").innerHTML =
+            '<span class="badge bg-secondary">Sin estado</span>';
+        }
         document.querySelector("#celCiclo").innerHTML =
           objData.data.ciclo;
         document.querySelector("#celDescripcion").innerHTML =

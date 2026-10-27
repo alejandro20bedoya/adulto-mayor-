@@ -43,29 +43,13 @@ class Fichas extends Controllers
             $fecha  = date('Y-m-d H:i:s');
             $telefono = strClean($_POST['telefono'] ?? '');
             $vereda = strClean($_POST['vereda'] ?? '');
+            $Zona = strClean($_POST['zona'] ?? '');
             $apoderado = strClean($_POST['apoderado'] ?? '');
             $cedulaapoderado = strClean($_POST['cedulaApoderado'] ?? '');
             $fechapago = date('Y-m-d H:i:s');
             $estado = strClean($_POST['Estado'] ?? '');
             $ciclo = strClean($_POST['Ciclo'] ?? '');
             $descripcion = strClean($_POST['Descripción'] ?? '');
-            
-            // var_dump(
-            //     $cedula,
-            //     $nombre,
-            //     $edad,  
-            //     $fecha,
-            //     $telefono,
-            //     $vereda,
-            //     $apoderado,
-            //     $cedulaapoderado,
-            //     $fechapago,
-            //     $estado,
-            //     $ciclo,
-            //     $descripcion
-
-            // );
-            // die();
 
             $videoData = null;
             $videoType = null;
@@ -94,6 +78,7 @@ class Fichas extends Controllers
                 $videoData,
                 $videoType,
                 $vereda,
+                $Zona,
                 $apoderado,
                 $cedulaapoderado,
                 $fechapago,

@@ -201,59 +201,63 @@
                             <tbody>
                                 <tr>
                                     <td>ID:</td>
-                                    <td id="celIdeAdulto">233104</td>
+                                    <td id="celIdeAdulto">00000</td>
                                 </tr>
                                 <tr>
                                     <td>Cedula:</td>
-                                    <td id="celCedulaAdulto">233104</td>
+                                    <td id="celCedulaAdulto">00000</td>
                                 </tr>
                                 <tr>
                                     <td>Nombre:</td>
-                                    <td id="celNombreAdulto">2875079</td>
+                                    <td id="celNombreAdulto">Usuario</td>
                                 </tr>
                                 <tr>
                                     <td>Edad:</td>
-                                    <td id="celEdadAdulto">Programación de Software</td>
+                                    <td id="celEdadAdulto">55</td>
                                 </tr>
                                 <tr>
                                     <td>Fecha:</td>
-                                    <td id="celFecha">Horas del programa</td>
+                                    <td id="celFecha">fecha</td>
                                 </tr>
                                 <tr>
                                     <td>Telefono:</td>
-                                    <td id="celTelefono">Horas del programa</td>
+                                    <td id="celTelefono">0000</td>
                                 </tr>
                                 <tr>
                                     <td>Tipo de video:</td>
-                                    <td id="celVideo">Horas del programa</td>
+                                    <td id="celVideo">Video</td>
                                 </tr>
                                 <tr>
                                     <td>Vereda:</td>
-                                    <td id="celVereda">Horas del programa</td>
+                                    <td id="celVereda">Vereda</td>
+                                </tr>
+                                <tr>
+                                    <td>Zona:</td>
+                                    <td id="celZona">Zona</td>
                                 </tr>
                                 <tr>
                                     <td>Apoderado:</td>
-                                    <td id="celApoderado">Horas del programa</td>
+                                    <td id="celApoderado">Ususario</td>
                                 </tr>
                                 <tr>
                                     <td>cedula del apoderado:</td>
-                                    <td id="celCedulaApoderado">Horas del programa</td>
+                                    <td id="celCedulaApoderado">00000</td>
                                 </tr>
                                 <tr>
                                     <td>Fecha de pago:</td>
-                                    <td id="celFechapago">Horas del programa</td>
+                                    <td id="celFechapago">Fecha</td>
                                 </tr>
                                 <tr>
                                     <td>Estado:</td>
-                                    <td id="celEstado">Horas del programa</td>
+                                    <td id="celEstado">Estado</td>
                                 </tr>
                                 <tr>
                                     <td>Ciclo:</td>
-                                    <td id="celCiclo">Horas del programa</td>
+                                    <td id="celCiclo">00</td>
                                 </tr>
                                 <tr>
                                     <td>Descripcion:</td>
-                                    <td id="celDescripcion">Horas del programa</td>
+                                    <td id="celDescripcion">Descripcion</td>
                                 </tr>
 
                             </tbody>

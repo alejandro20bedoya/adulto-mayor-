@@ -42,6 +42,7 @@ class FichasModel extends Mysql
         $video,
         $videoType,
         $vereda,
+        $Zona,
         $apoderado,
         $cedulaapodera,
         $fechapago,
@@ -61,8 +62,8 @@ class FichasModel extends Mysql
 
         // 2️⃣ Insertar nuevo registro
         $sql = "INSERT INTO videosadultomayor 
-        (numerocedula, nombre, edad, fecha, telefono, video, video_tipo, vereda, apoderado, cedulaapoderado, fecha_pago, Estado, ciclo, descripción)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (numerocedula, nombre, edad, fecha, telefono, video, video_tipo, vereda, zona, apoderado, cedulaapoderado, fecha_pago, Estado, ciclo, descripción)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)";
 
         $arrData = array(
             $cedula,
@@ -73,6 +74,7 @@ class FichasModel extends Mysql
             $video,
             $videoType,
             $vereda,
+            $Zona,
             $apoderado,
             $cedulaapodera,
             $fechapago,
