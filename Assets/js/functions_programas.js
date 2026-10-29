@@ -126,42 +126,56 @@ function verVideo(id) {
 }
 
 function fntViewVideo(id) {
-  let request = new XMLHttpRequest();
-  let ajaxUrl = base_url + "/Programas/getVideo/" + id;
-  request.open("GET", ajaxUrl, true);
-  request.send();
 
-  request.onreadystatechange = function () {
-    if (request.readyState == 4 && request.status == 200) {
+  const video = document.getElementById('videoTagPreview');
 
-      let objData = JSON.parse(request.responseText);
+  // Limpiar el video anterior
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
 
-      if (objData.status) {
-        document.querySelector('#videoSource').src = objData.data.video_url;
-        document.querySelector('#videoTagPreview').load();
-        $('#modalViewVideo').modal('show');
-      } else {
-        swal("Error", objData.msg, "error");
-      }
-    }
-  };
+  // URL directa al controlador PHP
+  const videoUrl =
+    base_url + "/Programas/getVideo/" + encodeURIComponent(id);
+
+  // Asignar la URL directamente al reproductor
+  video.src = videoUrl;
+
+  // Abrir el modal
+  $('#modalViewVideo').modal('show');
+
+  // Iniciar la carga del video
+  video.load();
 }
 
-// Cuando se cierre el modal
-$('#modalViewVideo').on('hidden.bs.modal', function () {
+// Detener el video al cerrar el modal
+document.addEventListener('DOMContentLoaded', function () {
 
-  let iframe = document.getElementById('videoPreview');
-  if (iframe) {
-    iframe.src = "";
-  }
+    const modal = document.getElementById('modalViewVideo');
+    const video = document.getElementById('videoTagPreview');
 
-  let videoTag = document.getElementById('videoTagPreview');
-  if (videoTag) {
-    videoTag.pause();
-    videoTag.currentTime = 0;
-  }
+    if (!modal || !video) {
+        console.error('No se encontró el modal o el reproductor.');
+        return;
+    }
+
+    // Ejecutar cuando el modal comienza a cerrarse
+    modal.addEventListener('hide.bs.modal', function () {
+
+        video.pause();
+        video.currentTime = 0;
+
+        // Eliminar la fuente para detener la descarga y reproducción
+        video.removeAttribute('src');
+
+        video.querySelectorAll('source').forEach(function (source) {
+            source.removeAttribute('src');
+        });
+
+        video.load();
+    });
+
 });
-
 
 // vista de informacion
 function fntViewInfo(id) {
@@ -268,6 +282,9 @@ function fntEditInfo(element, ideprograma) {
 
         document.querySelector("#txtVereda").value =
           objData.data.vereda;
+
+        document.querySelector("#zona").value =
+          objData.data.zona;
 
         document.querySelector("#txtNombreApoderado").value =
           objData.data.apoderado;

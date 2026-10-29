@@ -26,6 +26,7 @@ class ProgramasModel extends Mysql
         $videoData,
         $videoType,
         string $vereda,
+        string $zona,
         string $apoderado,
         string $cedulaapoderado,
         string $fechapago,
@@ -46,6 +47,7 @@ class ProgramasModel extends Mysql
                 video = ?, 
                 video_tipo = ?, 
                 vereda = ?,
+                zona = ?,
                 apoderado = ?,
                 cedulaapoderado = ?,
                 fecha_pago = ?,
@@ -63,6 +65,7 @@ class ProgramasModel extends Mysql
                 $videoData,
                 $videoType,
                 $vereda,
+                $zona,
                 $apoderado,
                 $cedulaapoderado,
                 $fechapago,
@@ -81,6 +84,7 @@ class ProgramasModel extends Mysql
                 fecha = ?, 
                 telefono = ?,
                 vereda = ?,
+                zona = ?,
                 apoderado = ?,
                 cedulaapoderado = ?,
                 fecha_pago = ?,
@@ -96,6 +100,7 @@ class ProgramasModel extends Mysql
                 $fecha,
                 $telefono,
                 $vereda,
+                $zona,
                 $apoderado,
                 $cedulaapoderado,
                 $fechapago,
@@ -108,7 +113,6 @@ class ProgramasModel extends Mysql
 
         return $this->update($sql, $arrData);
     }
-
 
     // LISTADO DE LA TABLA
     public function selectProgramas()
@@ -128,13 +132,15 @@ class ProgramasModel extends Mysql
     }
 
     // para reproduci el video
+    // Consultar video para reproducir
     public function selectVideo(int $id)
     {
-        $sql = "SELECT video, video_tipo 
-                FROM videosadultomayor 
-                WHERE id = $id";
+        $sql = "SELECT video, video_tipo
+            FROM videosadultomayor
+            WHERE id = $id";
 
         $request = $this->select($sql);
+
         return $request;
     }
 
@@ -212,8 +218,6 @@ class ProgramasModel extends Mysql
     // vista del editar
     public function selectadultomayoreditar(int $ideprograma)
     {
-
-
         $this->intIdePrograma = $ideprograma;
 
         $sql = "SELECT 
@@ -225,6 +229,7 @@ class ProgramasModel extends Mysql
     			telefono,
     			video_tipo,
                 vereda,
+                zona,
                 apoderado,
                 cedulaapoderado,
                 fecha_pago,

@@ -98,6 +98,18 @@
                                     required="">
                             </div>
 
+                            <div class="modal-body">
+                                <label for="txtZona">
+                                    Zona <span class="required">*</span>
+                                </label>
+
+                                <select class="form-select" id="zona" name="zona" required>
+                                    <option value="">Seleccione una zona</option>
+                                    <option value="Rural">Rural</option>
+                                    <option value="Urbano">Urbano</option>
+                                </select>
+                            </div>
+
                             <P>NOMBRE DEL APODERANTE</P>
 
                             <div class="modal-body">
@@ -162,23 +174,39 @@
     </div>
 </div>
 
+<!-- Modal para reproducir el video -->
+<div class="modal fade" id="modalViewVideo" tabindex="-1"
+    aria-hidden="true">
 
-<!-- modal para ver el video -->
-<div class="modal fade" id="modalViewVideo" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+
         <div class="modal-content">
+
             <div class="modal-header py-2">
-                <h5 class="modal-title">Video</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">Video del adulto mayor</h5>
+
+                <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar">
+                </button>
             </div>
 
             <div class="modal-body p-2">
-                <video id="videoTagPreview" controls style="width:100%; border-radius:6px;">
-                    <source id="videoSource" src="" type="">
+
+                <video id="videoTagPreview"
+                    controls
+                    preload="none"
+                    playsinline
+                    style="width:100%; max-height:75vh; border-radius:6px;">
                 </video>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
 <!-- Modal -->

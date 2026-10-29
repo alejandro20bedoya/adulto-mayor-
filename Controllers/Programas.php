@@ -70,6 +70,7 @@ class Programas extends Controllers
             $fecha    = strClean($_POST['txtFecha'] ?? '');
             $telefono = strClean($_POST['txttelefono'] ?? '');
             $vereda   = strClean($_POST['txtVereda'] ?? '');
+            $zona     = strClean($_POST['zona'] ?? '');
 
             // Manejo del video
             $videoData = null;
@@ -108,6 +109,7 @@ class Programas extends Controllers
                 $videoData,
                 $videoType,
                 $vereda,
+                $zona,
                 $apoderado,
                 $cedulaapoderado,
                 $fechapago,
@@ -159,7 +161,7 @@ class Programas extends Controllers
                     $btnView = '
                     <button class="btn btn-info btn-sm" 
                             onClick="fntViewInfo(' . $idAdultoMayor . ')" 
-                            title="Ver Programa">
+                            title="Ver información">
                         <i class="bi bi-eye"></i>
                     </button>';
                 }
@@ -169,7 +171,7 @@ class Programas extends Controllers
                     $btnEdit = '
                     <button class="btn btn-warning btn-sm" 
                             onClick="fntEditInfo(this,' . $idAdultoMayor . ')" 
-                            title="Editar Programa">
+                            title="Editar">
                         <i class="bi bi-pencil"></i>
                     </button>';
                 }
@@ -179,7 +181,7 @@ class Programas extends Controllers
                     $btnDelete = '
                     <button class="btn btn-danger btn-sm" 
                             onClick="fntDelInfo(' . $idAdultoMayor . ')" 
-                            title="Eliminar Programa">
+                            title="Eliminar">
                         <i class="bi bi-trash3"></i>
                     </button>';
                 }
@@ -199,29 +201,120 @@ class Programas extends Controllers
         }
     }
 
-    // ver video del adulto mayor
-    public function getVideo($id)
-    {
+    // ver video del adulto mayor// Reproducir video del adulto mayor
+    public function getVideo($id) {
         $id = intval($id);
-        $data = $this->model->selectVideo($id);
 
-        if ($data) {
-
-            $videoBase64 = "data:" . $data["video_tipo"] . ";base64," . base64_encode($data["video"]);
-
-            $arrResponse = array(
-                "status" => true,
-                "data" => array(
-                    "video_url"  => $videoBase64,
-                    "video_tipo" => $data["video_tipo"]
-                )
-            );
-        } else {
-            $arrResponse = array("status" => false, "msg" => "No se encontró el video.");
+        if ($id <= 0) {
+            http_response_code(400);
+            exit('ID no válido');
         }
 
-        echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
-        die();
+        $data = $this->model->selectVideo($id);
+
+        if (!$data || empty($data['video'])) {
+            http_response_code(404);
+            exit('No se encontró el video');
+        }
+
+        $video = $data['video'];
+        $tamano = strlen($video);
+
+        $tipo = $data['video_tipo'] ?? 'video/mp4';
+
+        // Permitir solamente tipos de video conocidos
+        $tiposPermitidos = [
+            'video/mp4',
+            'video/webm',
+            'video/ogg',
+            'video/quicktime'
+        ];
+
+        if (!in_array(strtolower($tipo), $tiposPermitidos, true)) {
+            $tipo = 'application/octet-stream';
+        }
+
+        // Evitar que otros datos se mezclen con el video
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: ' . $tipo);
+        header('Accept-Ranges: bytes');
+        header('Cache-Control: private, max-age=3600');
+        header('X-Content-Type-Options: nosniff');
+
+        // Revisar si el navegador solicita una parte del video
+        $inicio = 0;
+        $fin = $tamano - 1;
+
+        if (isset($_SERVER['HTTP_RANGE'])) {
+
+            if (
+                !preg_match(
+                    '/^bytes=(\d*)-(\d*)$/',
+                    trim($_SERVER['HTTP_RANGE']),
+                    $coincidencias
+                )
+            ) {
+                http_response_code(416);
+                header("Content-Range: bytes */$tamano");
+                exit;
+            }
+
+            $rangoInicio = $coincidencias[1];
+            $rangoFin = $coincidencias[2];
+
+            if ($rangoInicio === '' && $rangoFin === '') {
+                http_response_code(416);
+                header("Content-Range: bytes */$tamano");
+                exit;
+            }
+
+            // Rango de los últimos bytes del video
+            if ($rangoInicio === '') {
+                $cantidad = intval($rangoFin);
+
+                if ($cantidad <= 0) {
+                    http_response_code(416);
+                    header("Content-Range: bytes */$tamano");
+                    exit;
+                }
+
+                $inicio = max(0, $tamano - $cantidad);
+            } else {
+                $inicio = intval($rangoInicio);
+
+                if ($rangoFin !== '') {
+                    $fin = intval($rangoFin);
+                }
+            }
+
+            if (
+                $inicio >= $tamano ||
+                $fin < $inicio ||
+                $inicio < 0
+            ) {
+                http_response_code(416);
+                header("Content-Range: bytes */$tamano");
+                exit;
+            }
+
+            $fin = min($fin, $tamano - 1);
+
+            http_response_code(206);
+
+            header(
+                "Content-Range: bytes $inicio-$fin/$tamano"
+            );
+        }
+
+        $longitud = $fin - $inicio + 1;
+
+        header('Content-Length: ' . $longitud);
+
+        echo substr($video, $inicio, $longitud);
+        exit;
     }
 
     // vista del modal ver
@@ -241,6 +334,7 @@ class Programas extends Controllers
         }
         die();
     }
+
     // vista de la infoamcion en el modal editar
     public function getVistaAdultoMayorEditar($ideprograma)
     {
