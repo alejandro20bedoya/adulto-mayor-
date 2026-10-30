@@ -9,16 +9,20 @@ class Errors extends Controllers
 
     public function notFound()
     {
-        $pageContent = getPageRout('not-found');
-        if (empty($pageContent)) {
-            header("Location: " . base_url());
-        } else {
-            $data['page_tag'] = NOMBRE_EMPESA;
-            $data['page_title'] = NOMBRE_EMPESA . " - " . $pageContent['titulo'];
-            $data['page_name'] = $pageContent['titulo'];
-            $data['page'] = $pageContent;
-            $this->views->getView($this, "error", $data);
-        }
+        http_response_code(404);
+
+        $data['page_tag'] = NOMBRE_EMPESA;
+        $data['page_title'] = NOMBRE_EMPESA . ' - Página no encontrada';
+        $data['page_name'] = 'Página no encontrada';
+
+        // Evita que la vista intente leer una página inexistente.
+        $data['page'] = [
+            'titulo' => 'Página no encontrada',
+            'contenido' => 'La página que buscas no existe o no está disponible.',
+            'portada' => ''
+        ];
+
+        $this->views->getView($this, 'error', $data);
     }
 }
 

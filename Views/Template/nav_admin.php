@@ -5,13 +5,13 @@
         <!-- esta es la imagennd ell perfil -->
         <div class="mb-2 text-center">
             <?php
-            // Si hay imagen en Base64, usarla directamente
-            $foto = $_SESSION['userData']['imgperfil'];
+            $usuarioSesion = $_SESSION['userData'] ?? [];
+
+            $foto = $usuarioSesion['imgperfil'] ?? '';
 
             if (!empty($foto)) {
-                $rutaWeb = $foto; // Base64 para <img>
+                $rutaWeb = $foto;
             } else {
-                // Imagen por defecto
                 $rutaWeb = media() . "/images/uploads/perfiles/sinfoto.avif";
             }
             ?>

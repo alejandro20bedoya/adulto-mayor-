@@ -27,6 +27,7 @@ if ($tipo === 'gestion') {
                 telefono AS Telefono,
                 video_tipo AS TipoVideo,
                 vereda AS Vereda,
+                zona AS Zona,
                 apoderado AS Apoderado,
                 cedulaapoderado AS CedulaApoderado,
                 fecha_pago AS FechaPago,
@@ -90,6 +91,7 @@ if ($tipo === 'gestion') {
                 <th>Teléfono</th>
                 <th>Tipo Video</th>
                 <th>Vereda</th>
+                <th>Zona</th>
                 <th>Apoderado</th>
                 <th>Cédula Apoderado</th>
                 <th>Fecha Pago</th>
@@ -116,6 +118,7 @@ if ($tipo === 'gestion') {
                 <td>' . htmlspecialchars($row['Telefono']) . '</td>
                 <td>' . htmlspecialchars($row['TipoVideo']) . '</td>
                 <td>' . htmlspecialchars($row['Vereda']) . '</td>
+                <td>' . htmlspecialchars($row['Zona']) . '</td>
                 <td>' . htmlspecialchars($row['Apoderado']) . '</td>
                 <td>' . htmlspecialchars($row['CedulaApoderado']) . '</td>
                 <td>' . htmlspecialchars($row['FechaPago']) . '</td>
